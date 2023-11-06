@@ -1,0 +1,43 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    text-align: center;
+    margin: 50px auto;
+    max-width: 600px;
+}
+
+h1 {
+    font-size: 24px;
+}
+
+.input-section {
+    margin: 20px 0;
+}
+
+label {
+    font-weight: bold;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.qr-code {
+    margin-top: 20px;
+}
+
+img#qrCodeImage {
+    max-width: 100%;
+}
