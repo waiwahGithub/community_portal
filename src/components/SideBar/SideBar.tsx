@@ -182,7 +182,7 @@ const SideBar = () => {
                 <Link
                   className="flex-1 ml-3 whitespace-nowrap"
                   text="Your community"
-                  path="community"
+                  path="/my-community"
                 />
               </a>
             </li>
