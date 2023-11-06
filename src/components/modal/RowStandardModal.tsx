@@ -13,6 +13,7 @@ interface Props {
   notificationName?: string;
   btnText?: string;
   btnClassName?: string;
+  modalOnClicked?: (e?: any) => void;
 }
 
 const RowStandardModal: React.FC<Props> = (props) => {
@@ -29,12 +30,14 @@ const RowStandardModal: React.FC<Props> = (props) => {
     notificationName,
     btnText,
     btnClassName,
+    modalOnClicked,
   } = props;
 
   return (
     <>
       <footer
         className={`flex items-center justify-between leading-none p-2 md:px-4 md:py-2 hover:bg-gray-100 ${className}`}
+        onClick={modalOnClicked}
       >
         <div className="grid grid-rows-2 grid-flow-col cursor-pointer ">
           <div className="row-span-3">

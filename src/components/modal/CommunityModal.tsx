@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import Link from "../link/Link";
 import RowStandardModal from "./RowStandardModal";
 
@@ -7,6 +8,11 @@ interface Props {
 
 const CommunityModal: React.FC<Props> = (props) => {
   const { className } = props;
+  const navigate = useNavigate();
+
+  const modalOnClicked = () => {
+    navigate("/community");
+  };
 
   return (
     <>
@@ -19,21 +25,25 @@ const CommunityModal: React.FC<Props> = (props) => {
             isCommunityModal={true}
             btnText="Join"
             communityName="Javagroup"
+            modalOnClicked={modalOnClicked}
           />
           <RowStandardModal
             isCommunityModal={true}
             btnText="Join"
             communityName="Javagroup"
+            modalOnClicked={modalOnClicked}
           />
           <RowStandardModal
             isCommunityModal={true}
             btnText="Join"
             communityName="Javagroup"
+            modalOnClicked={modalOnClicked}
           />
           <RowStandardModal
             isCommunityModal={true}
             btnText="Join"
             communityName="Javagroup"
+            modalOnClicked={modalOnClicked}
           />
           <footer className="flex items-center justify-between">
             <Link
