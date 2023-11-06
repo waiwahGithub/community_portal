@@ -1,10 +1,8 @@
 import { imgBase64 } from "../../assets/base64/imgBase64";
 import WidthSizeDetection from "../../assets/config/WidthSizeDetection";
 import Nav from "../../components/Nav/Nav";
-import SideBar from "../../components/SideBar/SideBar";
 import { RoundedButton } from "../../components/button/Button";
 import CommunityModal from "../../components/modal/CommunityModal";
-import RowStandardModal from "../../components/modal/RowStandardModal";
 import Post from "../../components/post/Post";
 
 const Community = () => {
