@@ -24,7 +24,7 @@ const CommunityModal: React.FC<Props> = (props) => {
           <RowStandardModal
             isCommunityModal={true}
             btnText="Join"
-            communityName="Javagroup"
+            communityName="FirdausGroup"
             modalOnClicked={modalOnClicked}
           />
           <RowStandardModal
