@@ -2,6 +2,7 @@ import WidthSizeDetection from "../../assets/config/WidthSizeDetection";
 import Nav from "../../components/Nav/Nav";
 import { RoundedButton } from "../../components/button/Button";
 import Link from "../../components/link/Link";
+import AdvanceModalWithBtn from "../../components/modal/AdvanceModalWithButton";
 import RowStandardModal from "../../components/modal/RowStandardModal";
 
 const MyCommunity = () => {
@@ -19,8 +20,9 @@ const MyCommunity = () => {
         <div
           className={`${widthSize.mediumDevice ? "basis-9/12" : "basis-7/12"}`}
         >
-          <RoundedButton
-            text="Create community"
+          <AdvanceModalWithBtn
+            modalOpenBtnName="Create a community"
+            modalTitle="Create a community"
             className="bg-white h-10 ml-4 mb-5"
           />
           <p className="ml-5 mb-5 text-2xl font-bold">

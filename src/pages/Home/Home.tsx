@@ -2,7 +2,7 @@ import WidthSizeDetection from "../../assets/config/WidthSizeDetection";
 import Nav from "../../components/Nav/Nav";
 import SideBar from "../../components/SideBar/SideBar";
 import CommunityModal from "../../components/modal/CommunityModal";
-import PostModalWithBtn from "../../components/modal/PostModal";
+import AdvanceModalWithBtn from "../../components/modal/AdvanceModalWithButton";
 import Post from "../../components/post/Post";
 
 const Home = () => {
@@ -21,7 +21,7 @@ const Home = () => {
         <div
           className={`${widthSize.mediumDevice ? "basis-6/12" : "basis-5/12"}`}
         >
-          <PostModalWithBtn
+          <AdvanceModalWithBtn
             modalOpenBtnName="Create a post"
             modalTitle="Create a post"
             className="bg-white h-10 ml-4 mb-5"
