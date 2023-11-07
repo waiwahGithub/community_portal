@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import TextBox from "../textbox/TextBox";
 import { RoundedButton } from "../button/Button";
 import { textBoxTypes } from "../../lib/filterConstants";
-import Link from "../link/Link";
 
 interface Props {
   className?: string;
@@ -20,7 +19,6 @@ const PostModalWithBtn: React.FC<Props> = (props) => {
     modalOpenBtnName = "Open modal",
     modalOpenBtnClassName,
     modalTitle,
-    isShowCreatePostModal = false,
   } = props;
 
   const [showModal, setShowModal] = useState(false);

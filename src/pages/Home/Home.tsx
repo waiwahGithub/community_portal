@@ -1,8 +1,6 @@
-import { useState } from "react";
 import WidthSizeDetection from "../../assets/config/WidthSizeDetection";
 import Nav from "../../components/Nav/Nav";
 import SideBar from "../../components/SideBar/SideBar";
-import { RoundedButton } from "../../components/button/Button";
 import CommunityModal from "../../components/modal/CommunityModal";
 import PostModalWithBtn from "../../components/modal/PostModal";
 import Post from "../../components/post/Post";
