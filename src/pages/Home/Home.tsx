@@ -22,7 +22,7 @@ const Home = () => {
           className={`${widthSize.mediumDevice ? "basis-6/12" : "basis-5/12"}`}
         >
           <AdvanceModalWithBtn
-            modalOpenBtnName="Create ckl post"
+            modalOpenBtnName="Create a post 1"
             modalTitle="Create a post"
             className="bg-white h-10 ml-4 mb-5"
           />
