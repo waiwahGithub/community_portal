@@ -17,6 +17,13 @@ import Community from "./pages/Community/Community";
 import MyCommunity from "./pages/Community/MyCommunity";
 import MyFriend from "./pages/Friend/MyFriend";
 import Notifications from "./pages/Notifications/Notifications";
+import MyLike from "./pages/MyLike/MyLike";
+import MyDislike from "./pages/MyDislike/MyDislike";
+import MyPost from "./pages/MyPost/MyPost";
+import UserDashboard from "./pages/Dashboard/UserDashboard";
+import AdminDashboard from "./pages/Dashboard/AdminDashboard";
+import MyComment from "./pages/MyComment/MyComment";
+import PostDetailPage from "./pages/MyPost/PostDetailPage";
 
 function App() {
   const [jwtToken, setJWTToken] = useState<any>(
@@ -51,6 +58,13 @@ function App() {
           <Route path="/profile" element={<Profile />}></Route>
           <Route path="/community" element={<Community />}></Route>
           <Route path="/my-community" element={<MyCommunity />}></Route>
+          <Route path="/my-like" element={<MyLike />}></Route>
+          <Route path="/my-dislike" element={<MyDislike />}></Route>
+          <Route path="/my-post" element={<MyPost />}></Route>
+          <Route path="/post/post-detail" element={<PostDetailPage />}></Route>
+          <Route path="/dashboard/user" element={<UserDashboard />}></Route>
+          <Route path="/dashboard/admin" element={<AdminDashboard />}></Route>
+          <Route path="/my-comment" element={<MyComment />}></Route>
           <Route path="/privacy-policy" element={<PrivacyPolicy />}></Route>
           <Route path="/my-car-list" element={<MyCarList />}></Route>
           <Route path="/my-friend" element={<MyFriend />}></Route>

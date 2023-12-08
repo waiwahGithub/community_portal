@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { emptyCacheAndHardReload } from "../../store/app-actions";
 import WidthSizeDetection from "../../assets/config/WidthSizeDetection";
 import NotificationDropdown from "../dropdown/NotificationDropdown";
+import { useGetNotificationLogsQuery } from "../../hooks/use-NotificationQuery";
 
 const Nav = () => {
   const navigate = useNavigate();
@@ -51,11 +52,16 @@ const Nav = () => {
     localInfoQuery?.id
   );
 
+  // API
+  // const getNotificationLogsQuery = useGetNotificationLogsQuery(
+  //   localInfoQuery?.id
+  // );
+
   useEffect(() => {
     if (!jwtToken) return;
     setIsViewUserDetailsQuery(true);
     setInputValuefirstName(viewUserDetailsQuery?.data?.body?.firstName);
-    setInputValueProfileImage(viewUserDetailsQuery?.data?.body?.profileImage);
+    setInputValueProfileImage(viewUserDetailsQuery?.data?.body?.profileImgPath);
   }, [viewUserDetailsQuery]);
 
   useEffect(() => {

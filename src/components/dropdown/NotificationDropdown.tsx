@@ -2,11 +2,43 @@ import { useState, useEffect, useRef } from "react";
 import { imgBase64 } from "../../assets/base64/imgBase64";
 import Link from "../link/Link";
 import RowStandardModal from "../modal/RowStandardModal";
+import { useGetNotificationLogByUserIdQuery } from "../../hooks/use-NotificationQuery";
 
 const NotificationDropdown = () => {
+  // Global
+  const [accountQuery, setAccountQuery] = useState<any>(
+    localStorage.getItem("jwt_token")
+  );
+  const account = JSON.parse(accountQuery);
+
+  // State
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<any>(null);
 
+  // API
+  const getNotificationLogByUserIdQuery = useGetNotificationLogByUserIdQuery(
+    account?.id
+  );
+
+  // Functional events
+  const convertDateTime = (createdDate: any) => {
+    const currentDate = new Date().getTime();
+    const difference = currentDate - createdDate;
+
+    const minutesAgo = Math.floor(difference / (1000 * 60));
+    const hoursAgo = Math.floor(difference / (1000 * 60 * 60));
+    const daysAgo = Math.floor(difference / (1000 * 60 * 60 * 24));
+
+    if (minutesAgo < 60) {
+      return `${minutesAgo} min${minutesAgo !== 1 ? "s" : ""} ago`;
+    } else if (hoursAgo < 24) {
+      return `${hoursAgo} hr${hoursAgo !== 1 ? "s" : ""} ago`;
+    } else {
+      return `${daysAgo} day${daysAgo !== 1 ? "s" : ""} ago`;
+    }
+  };
+
+  // useEffect
   useEffect(() => {
     const handleOutsideClick = (e: any) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -36,34 +68,42 @@ const NotificationDropdown = () => {
           <div className="py-2">
             <span className="text-sm font-bold pl-4">Notifications</span>
             <ul className="mt-3">
-              <li>
-                <RowStandardModal
-                  isNotificationModal={true}
-                  notificationTime={6}
-                  notificationName="Kelvin liked your post"
-                />
-              </li>
-              <li>
-                <RowStandardModal
-                  isNotificationModal={true}
-                  notificationTime={7}
-                  notificationName="Gilbert shared your post"
-                />
-              </li>
-              <li>
-                <RowStandardModal
-                  isNotificationModal={true}
-                  notificationTime={8}
-                  notificationName="Era commented your post"
-                />
-              </li>
-              <li>
-                <RowStandardModal
-                  isNotificationModal={true}
-                  notificationTime={9}
-                  notificationName="John followed you"
-                />
-              </li>
+              {getNotificationLogByUserIdQuery?.data?.body
+                ?.sort((a: any, b: any) => {
+                  const dateA: any = new Date(a.createdDate);
+                  const dateB: any = new Date(b.createdDate);
+                  return dateB - dateA;
+                })
+                .slice(0, 4)
+                .map((log: any, index: any) => {
+                  const getNotificationType = () => {
+                    let type: any = "";
+                    if (log?.notificationType === 0) {
+                      type = "liked";
+                    } else if (log?.notificationType === 1) {
+                      type = "disliked";
+                    } else if (log?.notificationType === 2) {
+                      type = "commented";
+                    } else if (log?.notificationType === 3) {
+                      type = "shared";
+                    }
+
+                    return type;
+                  };
+                  return (
+                    <li>
+                      <RowStandardModal
+                        key={index}
+                        logoPath={log?.user?.profileImgPath}
+                        isNotificationModal={true}
+                        notificationTime={convertDateTime(log?.createdDate)}
+                        notificationName={`${
+                          log?.user?.firstName
+                        } ${getNotificationType()} your post`}
+                      />
+                    </li>
+                  );
+                })}
             </ul>
             <div className="text-center mb-2">
               <Link

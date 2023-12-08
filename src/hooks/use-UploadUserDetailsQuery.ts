@@ -1,19 +1,26 @@
-import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { uploadUserDetails } from "../lib/api";
+import { updateUserDetails, updateUserStatus } from "../lib/api";
 
-const useUploadUserDetailsQuery = (
+export const useUpdatedUserDetailsQuery = (
   enabled = false,
   userId: any,
-  username: any,
   firstName: any,
   lastName: any,
-  profileImage: any
+  userType?: any,
+  userBio?: any,
+  profileImgPath?: any
 ) => {
   const uploadUserDetailsQuery = useQuery<any, Error>(
     ["uploadUserDetailsQuery"],
     () =>
-      uploadUserDetails(userId, username, firstName, lastName, profileImage),
+      updateUserDetails(
+        userId,
+        firstName,
+        lastName,
+        userType,
+        userBio,
+        profileImgPath
+      ),
     {
       enabled: enabled,
       retry: true,
@@ -28,4 +35,24 @@ const useUploadUserDetailsQuery = (
   return uploadUserDetailsQuery;
 };
 
-export default useUploadUserDetailsQuery;
+export const useUpdateUserStatusQuery = (
+  enabled = false,
+  userId: any,
+  status: any
+) => {
+  const updateUserStatusQuery = useQuery<any, Error>(
+    ["updateUserStatus"],
+    () => updateUserStatus(userId, status),
+    {
+      enabled: enabled,
+      retry: true,
+      refetchInterval: 10000,
+      cacheTime: 0,
+      onError: () => {
+        console.log(Error);
+      },
+    }
+  );
+
+  return updateUserStatusQuery;
+};

@@ -70,9 +70,14 @@ const LoginOrSignupModal: React.FC<Props> = (props) => {
   const registerUserQuery = useRegisterUserQuery(
     isSignupBtnClicked,
     inputValue,
-    inputPwdValue,
     inputFNameValue,
-    inputLNameValue
+    inputLNameValue,
+    inputPwdValue,
+    inputValue,
+    "user",
+    null,
+    1,
+    null
   );
 
   const [continueBtnClass, setContinueBtnClass] = useState<string>(
