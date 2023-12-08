@@ -5,9 +5,142 @@ import { RoundedButton } from "../../components/button/Button";
 import CommunityModal from "../../components/modal/CommunityModal";
 import AdvanceModalWithBtn from "../../components/modal/AdvanceModalWithButton";
 import Post from "../../components/post/Post";
+import {
+  useGetCommunitiesQuery,
+  useGetActiveCommunitiesQuery,
+  useJoinCommunity,
+  useUnjoinCommunity,
+  useCreateCommunityQuery,
+  useGetUserByCommunityQuery,
+  useGetAllCommunityMembersQuery,
+} from "../../hooks/use-CommunityQuery";
+import { useEffect, useRef, useState } from "react";
+import { useGetAllPostsQuery } from "../../hooks/use-PostQuery";
+import { useLocation } from "react-router-dom";
 
 const Community = () => {
   const widthSize = WidthSizeDetection();
+  const location = useLocation();
+  const [accountQuery, setAccountQuery] = useState<any>(
+    localStorage.getItem("jwt_token")
+  );
+  const account = JSON.parse(accountQuery);
+  const [communityId, setCommunityId] = useState<any>(null);
+  const queryParams = new URLSearchParams(location.search);
+  const paramCommunityId = queryParams.get("communityid");
+
+  // State
+  const [getCommunityData, setGetCommunityData] = useState<any>();
+  const [getAllCommunityMembers, setGetAllCommunityMembers] = useState<any>();
+
+  // API
+  // Get communities
+  const getAllPostsQuery = useGetAllPostsQuery();
+  const getCommunitiesQuery = useGetCommunitiesQuery();
+  const getAllCommunityMembersQuery = useGetAllCommunityMembersQuery();
+  const getActiveCommunitiesQuery = useGetActiveCommunitiesQuery();
+  const getUserByCommunityQuery = useGetUserByCommunityQuery(account?.id);
+  // join
+  const [isJoinBtnClicked, setIsJoinBtnClicked] = useState<boolean>(false);
+  const joinCommunity = useJoinCommunity(
+    isJoinBtnClicked,
+    account?.id,
+    communityId
+  );
+  // unjoin
+  const [isUnjoinBtnClicked, setIsUnjoinBtnClicked] = useState<boolean>(false);
+  const unjoinCommunity = useUnjoinCommunity(
+    isUnjoinBtnClicked,
+    account?.id,
+    communityId
+  );
+  // create community
+  const [isCreateCommunityBtnClicked, setIsCreateCommunityBtnClicked] =
+    useState<boolean>(false);
+  const [communityBio, setcommunityBio] = useState<any>(null);
+  const [communityLogoPath, setcommunityLogoPath] = useState<any>(null);
+  const [communityName, setcommunityName] = useState<any>(null);
+  const createCommunityQuery = useCreateCommunityQuery(
+    isCreateCommunityBtnClicked,
+    account?.id,
+    communityBio,
+    communityLogoPath,
+    communityName
+  );
+
+  // Functional Events
+  // click on the button to setEnabled to true so that useJoinCommunity() will get trigger and run
+  const onJoinCommunityBtnClicked = () => {
+    setIsJoinBtnClicked(true);
+  };
+
+  const convertDateTime = (createdDate: any) => {
+    const currentDate = new Date().getTime();
+    const difference = currentDate - createdDate;
+
+    const minutesAgo = Math.floor(difference / (1000 * 60));
+    const hoursAgo = Math.floor(difference / (1000 * 60 * 60));
+    const daysAgo = Math.floor(difference / (1000 * 60 * 60 * 24));
+
+    if (minutesAgo < 60) {
+      return `${minutesAgo} min${minutesAgo !== 1 ? "s" : ""} ago`;
+    } else if (hoursAgo < 24) {
+      return `${hoursAgo} hr${hoursAgo !== 1 ? "s" : ""} ago`;
+    } else {
+      return `${daysAgo} day${daysAgo !== 1 ? "s" : ""} ago`;
+    }
+  };
+
+  const convertDate = (dateTime?: any) => {
+    const date = new Date(dateTime);
+    const monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const year = date.getFullYear();
+    const month = monthNames[date.getMonth()];
+    const day = date.getDate();
+
+    return `${day} ${month}, ${year}`;
+  };
+
+  function countUsersInCommunities() {
+    const communityUsersCount: any = {};
+
+    getAllCommunityMembersQuery?.data?.body.forEach((item: any) => {
+      const communityID = item.community.communityID;
+      const status = item.status;
+      if (status === 1) {
+        if (communityUsersCount[communityID]) {
+          communityUsersCount[communityID]++;
+        } else {
+          communityUsersCount[communityID] = 1;
+        }
+      }
+    });
+
+    return communityUsersCount;
+  }
+
+  // useEffect
+  useEffect(() => {
+    const communityData = getCommunitiesQuery.data?.body.find(
+      (item: any) =>
+        item.communityID === parseFloat(paramCommunityId || "") &&
+        item.status === 1
+    );
+    setGetCommunityData(communityData);
+  });
 
   return (
     <div className="bg-[#F0F2F5] min-h-screen ">
@@ -22,16 +155,20 @@ const Community = () => {
             <img
               alt="Placeholder"
               className="block rounded-full h-auto w-16"
-              src="https://picsum.photos/128/128/?random"
+              src={getCommunityData?.communityLogoPath}
             />
           </div>
-          <p className="ml-2 text-md font-medium">Java group</p>
+          <p className="ml-2 text-md font-medium">
+            {getCommunityData?.communityName}
+          </p>
           <p className="ml-2 text-sm text-gray-500 font-light">
-            123,446 Members
+            {countUsersInCommunities()?.[parseFloat(paramCommunityId || "")] ??
+              0}{" "}
+            Members
           </p>
           <RoundedButton
             text="Joined"
-            className="text-sm w-3/4 ml-2 row-end-4 bg-[#d25a5f] text-white cursor-default opacity-50"
+            className="text-sm w-4/4 ml-2 row-end-4 bg-[#d25a5f] text-white cursor-default opacity-50"
             onClickButton={() => {}}
           />
         </div>
@@ -49,10 +186,43 @@ const Community = () => {
             modalOpenBtnName="Create a post"
             modalTitle="Create a post"
             className="bg-white h-10 ml-4 mb-5"
+            isShowCreatePostModal={true}
+            communityId={paramCommunityId}
           />
-          <Post />
-          <Post />
-          <Post />
+          {getAllPostsQuery?.data?.body
+            ?.filter(
+              (post: any) =>
+                post?.community?.communityID ===
+                parseFloat(paramCommunityId || "")
+            )
+            ?.sort((a: any, b: any) => {
+              const dateA: any = new Date(a.createdDate);
+              const dateB: any = new Date(b.createdDate);
+              return dateB - dateA;
+            })
+            .map((post: any, index: any) => (
+              <Post
+                key={index}
+                postId={post?.postID}
+                postTitle={post?.postTitle}
+                postContent={post?.postContent}
+                profileImgSrc={post?.postImgPath}
+                likeCount={12}
+                commentCount={12}
+                shareCount={45}
+                targetedUserId={post?.user?.id}
+                nameAndDate={
+                  post?.user?.firstName +
+                  " . " +
+                  convertDateTime(post?.createdDate)
+                }
+              />
+            ))}
+          {getAllPostsQuery?.data?.body?.filter(
+            (post: any) =>
+              post?.community?.communityID ===
+              parseFloat(paramCommunityId || "")
+          )?.length === 0 && <p>No posts created for this community.</p>}
         </div>
         <div
           className={`${widthSize.mediumDevice ? "basis-3/12" : "basis-1/6"}`}
@@ -64,7 +234,7 @@ const Community = () => {
               </header>
               <hr />
               <p className="px-3 my-3 text-sm text-gray-700">
-                Welcome to JavaGroup: The place for anything in Java.
+                {getCommunityData?.communityBio}
               </p>
               <p className="flex px-3 py-3">
                 <img
@@ -72,12 +242,17 @@ const Community = () => {
                   className="w-[15px] h-[15px]"
                 />
                 <span className="text-xs text-gray-600 ml-2">
-                  Created since Jan 26, 2018
+                  Created since {convertDate(getCommunityData?.createdDate)}
                 </span>
               </p>
               <hr />
               <p className="text-center font-bold text-2xl my-5">
-                123K Members
+                {
+                  countUsersInCommunities()?.[
+                    parseFloat(paramCommunityId || "")
+                  ]
+                }{" "}
+                Members
               </p>
               <hr />
               <p className="font-medium px-3 text-sm pt-3">Admin</p>
@@ -87,7 +262,7 @@ const Community = () => {
                   className="w-[40px] rounded-full"
                 />
                 <span className="text-sm text-gray-600 mt-2 ml-4">
-                  Kelvin low
+                  {`${getCommunityData?.user?.firstName} ${getCommunityData?.user?.lastName}`}
                 </span>
               </p>
               <hr />

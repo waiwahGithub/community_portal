@@ -34,6 +34,7 @@ export const AdvanceButton: React.FC<Props> = (props) => {
     <button
       className={`py-[8px] px-4 rounded-full shadow flex ${className} cursor-default`}
       onChange={onChangekButton}
+      onClick={onClickButton}
     >
       <ImageContainer
         src={imgSrcFront}

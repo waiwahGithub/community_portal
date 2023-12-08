@@ -4,11 +4,11 @@ import ImageContainer from "../../components/image/Image";
 import TextBox from "../../components/textbox/TextBox";
 import { RoundedButton } from "../../components/button/Button";
 import profileImg from "../../assets/img/default_profile_pic.png";
-import useUploadUserDetailsQuery from "../../hooks/use-UploadUserDetailsQuery";
 import useViewUserDetailsById from "../../hooks/use-ViewUserDetailsByID";
 import LoadingSpinner from "../../components/loadingSpinner/LoadingSpinner";
 import SideBar from "../../components/SideBar/SideBar";
 import WidthSizeDetection from "../../assets/config/WidthSizeDetection";
+import { useUpdatedUserDetailsQuery } from "../../hooks/use-UploadUserDetailsQuery";
 
 const Profile = () => {
   const widthSize = WidthSizeDetection();
@@ -131,23 +131,24 @@ const Profile = () => {
     inputValueUserId
   );
 
-  const [inputValueUsername, setInputValueUsername] = useState<any>();
+  const [inputValueEmail, setInputValueEmail] = useState<any>();
   const [inputValuefirstName, setInputValuefirstName] = useState<any>();
   const [inputValueLastName, setInputValueLastName] = useState<any>();
   const [inputValueProfileImage, setInputValueProfileImage] = useState<any>();
   const [isSaveBtnClicked, setIsSaveBtnClicked] = useState<boolean>(false);
 
-  const uploadUserDetailsQuery = useUploadUserDetailsQuery(
+  const uploadUserDetailsQuery = useUpdatedUserDetailsQuery(
     isSaveBtnClicked && isImageUploaded,
     inputValueUserId,
-    inputValueUsername,
     inputValuefirstName,
     inputValueLastName,
+    "user",
+    null,
     inputValueProfileImage
   );
 
-  const onChangeHandlerUsername = (e: any) => {
-    setInputValueUsername(e.target.value);
+  const onChangeHandlerEmail = (e: any) => {
+    setInputValueEmail(e.target.value);
   };
 
   const onChangeHandlerFirstName = (e: any) => {
@@ -160,7 +161,7 @@ const Profile = () => {
   const onClickSaveBtn = () => {
     if (
       inputValueUserId &&
-      inputValueUsername &&
+      inputValueEmail &&
       inputValuefirstName &&
       inputValueLastName
     ) {
@@ -188,10 +189,10 @@ const Profile = () => {
 
   useEffect(() => {
     if (!jwtToken) return;
-    setInputValueUsername(viewUserDetailsQuery?.data?.body?.username);
+    setInputValueEmail(viewUserDetailsQuery?.data?.body?.email);
     setInputValuefirstName(viewUserDetailsQuery?.data?.body?.firstName);
     setInputValueLastName(viewUserDetailsQuery?.data?.body?.lastName);
-    setInputValueProfileImage(viewUserDetailsQuery?.data?.body?.profileImage);
+    setInputValueProfileImage(viewUserDetailsQuery?.data?.body?.profileImgPath);
   }, [isViewUserDetailsQueryFetched]);
 
   useEffect(() => {
@@ -234,8 +235,9 @@ const Profile = () => {
             <p className="text-sm mt-10">Email address</p>
             <TextBox
               className="w-2/4 mt-1 "
-              value={fbInfoQuery?.data?.email || inputValueUsername}
-              onChange={onChangeHandlerUsername}
+              value={fbInfoQuery?.data?.email || inputValueEmail}
+              onChange={onChangeHandlerEmail}
+              disabled={true}
             />
             <p className="text-sm mt-4">First name</p>
             <TextBox
@@ -250,8 +252,8 @@ const Profile = () => {
               onChange={onChangeHandlerLastName}
             />
 
-            <p className="text-sm mt-4">Mobile</p>
-            <TextBox className="w-2/4 mt-1" placeholder="+65 9988 8899" />
+            {/* <p className="text-sm mt-4">Mobile</p>
+            <TextBox className="w-2/4 mt-1" placeholder="+65 9988 8899" /> */}
           </div>
           <div className="mt-10 mb-20 ml-4">
             <RoundedButton

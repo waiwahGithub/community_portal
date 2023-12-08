@@ -101,8 +101,8 @@ const SideBar = () => {
                 <ImageContainer src={imgBase64.postIcon} className="w-5" />
                 <Link
                   className="flex-1 ml-3 whitespace-nowrap"
-                  text="Your posts"
-                  path="privacy-policy"
+                  text="My posts"
+                  path="/my-post"
                 />
               </a>
             </li>
@@ -121,8 +121,8 @@ const SideBar = () => {
                 <ImageContainer src={imgBase64.likeIcon} className="w-5" />
                 <Link
                   className="flex-1 ml-3 whitespace-nowrap"
-                  text="Your likes"
-                  path="privacy-policy"
+                  text="My likes"
+                  path="/my-like"
                 />
               </a>
             </li>
@@ -141,8 +141,8 @@ const SideBar = () => {
                 <ImageContainer src={imgBase64.dislikeIcon} className="w-5" />
                 <Link
                   className="flex-1 ml-3 whitespace-nowrap"
-                  text="Your dislike"
-                  path="privacy-policy"
+                  text="My dislike"
+                  path="/my-dislike"
                 />
               </a>
             </li>
@@ -161,8 +161,8 @@ const SideBar = () => {
                 <ImageContainer src={imgBase64.commentIcon} className="w-5" />
                 <Link
                   className="flex-1 ml-3 whitespace-nowrap"
-                  text="Your comments"
-                  path="privacy-policy"
+                  text="My comments"
+                  path="/my-comment"
                 />
               </a>
             </li>
@@ -181,7 +181,7 @@ const SideBar = () => {
                 <ImageContainer src={imgBase64.communityIcon} className="w-6" />
                 <Link
                   className="flex-1 ml-3 whitespace-nowrap"
-                  text="Your community"
+                  text="My community"
                   path="/my-community"
                 />
               </a>
@@ -237,7 +237,7 @@ const SideBar = () => {
                 <Link
                   className="flex-1 ml-3 whitespace-nowrap"
                   text=" User dashboard"
-                  path="privacy-policy"
+                  path="/dashboard/user"
                 />
               </a>
             </li>
@@ -284,7 +284,7 @@ const SideBar = () => {
                 <Link
                   className="flex-1 ml-3 whitespace-nowrap"
                   text="Admin dashboard"
-                  path="privacy-policy"
+                  path="/dashboard/admin"
                 />
               </a>
             </li>

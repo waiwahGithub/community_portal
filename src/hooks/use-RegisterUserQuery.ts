@@ -1,17 +1,32 @@
-import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { getCarDetails, registerUser } from "../lib/api";
+import { registerUser } from "../lib/api";
 
 const useRegisterUserQuery = (
   enabled = false,
   username: any,
-  password: any,
   firstName: any,
-  lastName: any
+  lastName: any,
+  password: any,
+  email?: any,
+  userType?: any,
+  userBio?: any,
+  status?: any,
+  profileImgPath?: any
 ) => {
   const registerUserQuery = useQuery<any, Error>(
     ["registerUserQuery"],
-    () => registerUser(username, password, firstName, lastName),
+    () =>
+      registerUser(
+        username,
+        firstName,
+        lastName,
+        password,
+        email,
+        userType,
+        userBio,
+        status,
+        profileImgPath
+      ),
     {
       enabled: enabled,
       retry: true,

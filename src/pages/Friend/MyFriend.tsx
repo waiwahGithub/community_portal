@@ -1,12 +1,20 @@
+import { useState } from "react";
 import WidthSizeDetection from "../../assets/config/WidthSizeDetection";
 import Nav from "../../components/Nav/Nav";
 import { RoundedButton } from "../../components/button/Button";
 import Link from "../../components/link/Link";
 import AdvanceModalWithBtn from "../../components/modal/AdvanceModalWithButton";
 import RowStandardModal from "../../components/modal/RowStandardModal";
+import { useGetFollowedFriendsQuery } from "../../hooks/use-FriendQuery";
 
 const MyFriend = () => {
   const widthSize = WidthSizeDetection();
+
+  // State
+  const [status, setStatus] = useState<number>(0);
+
+  // API
+  const getFollowedFriendsQuery = useGetFollowedFriendsQuery(status);
 
   return (
     <div className="bg-[#F0F2F5] min-h-screen ">

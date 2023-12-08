@@ -11,7 +11,7 @@ import {
   useGetNotificationLogByUserIdQuery,
 } from "../../hooks/use-NotificationQuery";
 
-const Notifications = () => {
+const MyDislike = () => {
   // Global
   const widthSize = WidthSizeDetection();
   const [accountQuery, setAccountQuery] = useState<any>(
@@ -21,10 +21,11 @@ const Notifications = () => {
 
   // State
   const [hasNotification, setHasNotification] = useState<any>(true);
-  const [showControlByStatus, setShowControlByStatus] = useState<any>(10);
 
   // API
-  const getAllNotificationQuery = useGetAllNotificationQuery();
+  const getNotificationLogByUserIdQuery = useGetNotificationLogByUserIdQuery(
+    account?.id
+  );
 
   // Functional events
   const convertDateTime = (createdDate: any) => {
@@ -57,14 +58,14 @@ const Notifications = () => {
         <div
           className={`${widthSize.mediumDevice ? "basis-6/12" : "basis-5/12"}`}
         >
-          <p className="ml-4 mb-5 text-2xl font-bold">Notification</p>
+          <p className="ml-4 mb-5 text-2xl font-bold">My Disikes</p>
           <hr className="basis-1/2 pt-4 mt-4 space-y-2 font-medium border-t border-gray-200" />
           {!hasNotification && (
             <p className="ml-4 mb-5 text-md font-bold">
-              You don't have any notification yet
+              You haven't dislike any post yet
             </p>
           )}
-          {getAllNotificationQuery?.data?.body
+          {getNotificationLogByUserIdQuery?.data?.body
             ?.sort((a: any, b: any) => {
               const dateA: any = new Date(a.createdDate);
               const dateB: any = new Date(b.createdDate);
@@ -85,36 +86,21 @@ const Notifications = () => {
 
                 return type;
               };
-
-              if (log?.post?.user?.id === account?.id)
-                if (
-                  showControlByStatus === 10
-                    ? log?.post?.user?.id === account?.id
-                    : showControlByStatus === 0
-                    ? log?.post?.user?.id === account?.id &&
-                      log?.notificationType === 0
-                    : showControlByStatus === 1
-                    ? log?.post?.user?.id === account?.id &&
-                      log?.notificationType === 1
-                    : log?.post?.user?.id === account?.id &&
-                      log?.notificationType === 2
-                )
-                  return (
-                    <RowStandardModal
-                      key={index}
-                      logoPath={log?.user?.profileImgPath}
-                      isNotificationModal={true}
-                      notificationTime={convertDateTime(log?.createdDate)}
-                      notificationName={`${
-                        log?.user?.firstName
-                      } ${getNotificationType()} your `}
-                      notificationLink={`http://localhost:3000/post/post-detail?postId=${log?.post?.postID}`}
-                      className="bg-white rounded-lg mb-4"
-                    />
-                  );
+              if (log?.notificationType === 1)
+                return (
+                  <RowStandardModal
+                    key={index}
+                    logoPath={log?.user?.profileImgPath}
+                    isNotificationModal={true}
+                    notificationTime={convertDateTime(log?.createdDate)}
+                    notificationName={`You ${getNotificationType()} this `}
+                    notificationLink={`http://localhost:3000/post/post-detail?postId=${log?.post?.postID}`}
+                    className="bg-white rounded-lg mb-4"
+                  />
+                );
             })}
         </div>
-        <div
+        {/* <div
           className={`${widthSize.mediumDevice ? "basis-3/12" : "basis-1/6"}`}
         >
           <div className={`mb-10 px-1 w-full lg:px-4 mt-16 `}>
@@ -123,49 +109,18 @@ const Notifications = () => {
                 <h1 className="text-lg mt-3 ml-2">Filter</h1>
               </header>
               <div className="px-4 py-4">
-                <RoundedButton
-                  text="All"
-                  className={`mr-3 mb-3 ${
-                    showControlByStatus === 10 ? "bg-gray-200" : ""
-                  }`}
-                  onClickButton={() => {
-                    setShowControlByStatus(10);
-                  }}
-                />
-                <RoundedButton
-                  text="Like"
-                  className={`mr-3 mb-3 ${
-                    showControlByStatus === 0 ? "bg-gray-200" : ""
-                  }`}
-                  onClickButton={() => {
-                    setShowControlByStatus(0);
-                  }}
-                />
-                <RoundedButton
-                  text="Dislike"
-                  className={`mr-3 mb-3 ${
-                    showControlByStatus === 1 ? "bg-gray-200" : ""
-                  }`}
-                  onClickButton={() => {
-                    setShowControlByStatus(1);
-                  }}
-                />
-                <RoundedButton
-                  text="Comment"
-                  className={`mr-3 mb-3 ${
-                    showControlByStatus === 2 ? "bg-gray-200" : ""
-                  }`}
-                  onClickButton={() => {
-                    setShowControlByStatus(2);
-                  }}
-                />
+                <RoundedButton text="Like" className="mr-3 mb-3" />
+                <RoundedButton text="Dislike" className="mr-3 mb-3" />
+                <RoundedButton text="Follow" className="mr-3 mb-3" />
+                <RoundedButton text="Unfollow" className="mr-3 mb-3" />
+                <RoundedButton text="All" className="mr-3 mb-3 bg-gray-100" />
               </div>
             </article>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
 };
 
-export default Notifications;
+export default MyDislike;
