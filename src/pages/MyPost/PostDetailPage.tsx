@@ -24,6 +24,7 @@ const PostDetailPage = () => {
   const account = JSON.parse(accountQuery);
   const queryParams = new URLSearchParams(location.search);
   const postId = queryParams.get("postId");
+  const TargetedUserId = queryParams.get("targetuserid");
 
   // State
   const userAccount = useRef<any>();
@@ -36,12 +37,12 @@ const PostDetailPage = () => {
   const followFriendQuery = useFollowFriendQuery(
     isJoinClicked,
     account?.id,
-    parseFloat(postId || "")
+    parseFloat(TargetedUserId || "")
   );
   const unfollowFriendQuery = useUnfollowFriendQuery(
     isUnjoinClicked,
     account?.id,
-    parseFloat(postId || "")
+    parseFloat(TargetedUserId || "")
   );
 
   // Functional Events
@@ -89,7 +90,7 @@ const PostDetailPage = () => {
   function checkFriendFollow() {
     const friendFollow = getAllFollowListQuery?.data?.body.find(
       (item: any) =>
-        item.friendID === parseFloat(postId || "") &&
+        item.friendID === parseFloat(TargetedUserId || "") &&
         item.status === 1 &&
         item?.user?.id === account?.id
     );
@@ -99,7 +100,7 @@ const PostDetailPage = () => {
 
     const userFound = getAllFollowListQuery?.data?.body.find(
       (item: any) =>
-        item.friendID === parseFloat(postId || "") &&
+        item.friendID === parseFloat(TargetedUserId || "") &&
         item.status === 1 &&
         item?.user?.id === account?.id
     );
@@ -112,6 +113,10 @@ const PostDetailPage = () => {
   }
 
   const joinOnClicked = () => {
+    if (!account?.id) {
+      alert("Please login");
+      return;
+    }
     if (checkFriendFollow() === "Follow") {
       setIsJoinClicked(true);
     } else if (checkFriendFollow() === "Unfollow") {

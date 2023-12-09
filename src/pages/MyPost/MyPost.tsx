@@ -61,47 +61,55 @@ const MyPost = () => {
         >
           <p className="ml-4 mb-5 text-2xl font-bold">My Posts</p>
           <hr className="basis-1/2 pt-4 mt-4 space-y-2 font-medium border-t border-gray-200" />
-          <AdvanceModalWithBtn
-            modalOpenBtnName="Create a post"
-            modalTitle="Create a post"
-            className="bg-white h-10 ml-4 mb-5"
-            isShowCreatePostModal={true}
-          />
-          {getAllPostsQuery?.data?.body
-            ?.sort((a: any, b: any) => {
-              const dateA: any = new Date(a.createdDate);
-              const dateB: any = new Date(b.createdDate);
-              return dateB - dateA;
-            })
-            .map((post: any, index: any) => {
-              if (
-                showControlByStatus === 3
-                  ? post?.user?.id === account?.id
-                  : showControlByStatus === 1
-                  ? post?.user?.id === account?.id && post?.status === 1
-                  : post?.user?.id === account?.id && post?.status === 0
-              )
-                return (
-                  <Post
-                    key={index}
-                    postId={post?.postID}
-                    postTitle={post?.postTitle}
-                    postContent={post?.postContent}
-                    profileImgSrc={post?.postImgPath}
-                    likeCount={12}
-                    commentCount={12}
-                    shareCount={45}
-                    targetedUserId={post?.user?.id}
-                    nameAndDate={
-                      post?.user?.firstName +
-                      " . " +
-                      convertDateTime(post?.createdDate)
-                    }
-                    isEditable={true}
-                    postStatus={post?.status}
-                  />
-                );
-            })}
+          {!account?.id && (
+            <p className="ml-4 mb-5 text-md font-bold">
+              Please login to see your posts
+            </p>
+          )}
+          {account?.id && (
+            <AdvanceModalWithBtn
+              modalOpenBtnName="Create a post"
+              modalTitle="Create a post"
+              className="bg-white h-10 ml-4 mb-5"
+              isShowCreatePostModal={true}
+            />
+          )}
+          {account?.id &&
+            getAllPostsQuery?.data?.body
+              ?.sort((a: any, b: any) => {
+                const dateA: any = new Date(a.createdDate);
+                const dateB: any = new Date(b.createdDate);
+                return dateB - dateA;
+              })
+              .map((post: any, index: any) => {
+                if (
+                  showControlByStatus === 3
+                    ? post?.user?.id === account?.id
+                    : showControlByStatus === 1
+                    ? post?.user?.id === account?.id && post?.status === 1
+                    : post?.user?.id === account?.id && post?.status === 0
+                )
+                  return (
+                    <Post
+                      key={index}
+                      postId={post?.postID}
+                      postTitle={post?.postTitle}
+                      postContent={post?.postContent}
+                      profileImgSrc={post?.postImgPath}
+                      likeCount={12}
+                      commentCount={12}
+                      shareCount={45}
+                      targetedUserId={post?.user?.id}
+                      nameAndDate={
+                        post?.user?.firstName +
+                        " . " +
+                        convertDateTime(post?.createdDate)
+                      }
+                      isEditable={true}
+                      postStatus={post?.status}
+                    />
+                  );
+              })}
         </div>
         <div
           className={`${widthSize.mediumDevice ? "basis-3/12" : "basis-1/6"}`}

@@ -14,6 +14,13 @@ const NotificationDropdown = () => {
     localStorage.getItem("jwt_token")
   );
   const account = JSON.parse(accountQuery);
+  const [needRefreshQuery, setNeedRefreshQuery] = useState<any>(
+    localStorage.getItem("needRefreshQuery")
+  );
+
+  setInterval(() => {
+    setNeedRefreshQuery(localStorage.getItem("needRefreshQuery"));
+  }, 1000);
 
   // State
   const [isOpen, setIsOpen] = useState(false);
@@ -21,8 +28,6 @@ const NotificationDropdown = () => {
   const [isNotificationClick, setIsNotificationClick] =
     useState<boolean>(false);
   const [getUserData, setGetUserData] = useState<any>();
-
-  console.log(getUserData);
 
   // API
   const getNotificationLogByUserIdQuery = useGetNotificationLogByUserIdQuery(
@@ -55,6 +60,8 @@ const NotificationDropdown = () => {
     const handleOutsideClick = (e: any) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setIsOpen(false);
+        localStorage.setItem("needRefreshQuery", "false");
+        getNotificationLogByUserIdQuery?.refetch();
       }
     };
 
@@ -66,20 +73,19 @@ const NotificationDropdown = () => {
   }, []);
 
   useEffect(() => {
-    const userData = getUserDetailsQuery.data?.body.find(
-      (item: any) => item.id === account?.id && item.status === 1
-    );
-    setGetUserData(userData);
-  }, [getUserDetailsQuery.data]);
+    if (needRefreshQuery === "true") {
+      getNotificationLogByUserIdQuery?.refetch();
+    }
+  }, [needRefreshQuery]);
 
   return (
     <div className="relative inline-block text-left">
       <img
         className="bg-gray-100 rounded-full w-[25px] h-[25px]  mt-1 mr-5 cursor-pointer"
         onClick={() => {
+          getNotificationLogByUserIdQuery?.refetch();
           setIsNotificationClick(true);
           setIsOpen(!isOpen);
-          setGetUserData(null);
         }}
         src={
           getUserData?.notificationStatus === 1
@@ -88,7 +94,7 @@ const NotificationDropdown = () => {
         }
       />
 
-      {getUserData?.notificationStatus === 1 && (
+      {needRefreshQuery === "true" && (
         <div className="absolute top-0 left-0 h-3 w-3 bg-red-700 rounded-full"></div>
       )}
       {isOpen && (
@@ -99,42 +105,43 @@ const NotificationDropdown = () => {
           <div className="py-2">
             <span className="text-sm font-bold pl-4">Notifications</span>
             <ul className="mt-3">
-              {getNotificationLogByUserIdQuery?.data?.body
-                ?.sort((a: any, b: any) => {
-                  const dateA: any = new Date(a.createdDate);
-                  const dateB: any = new Date(b.createdDate);
-                  return dateB - dateA;
-                })
-                .slice(0, 4)
-                .map((log: any, index: any) => {
-                  const getNotificationType = () => {
-                    let type: any = "";
-                    if (log?.notificationType === 0) {
-                      type = "liked";
-                    } else if (log?.notificationType === 1) {
-                      type = "disliked";
-                    } else if (log?.notificationType === 2) {
-                      type = "commented";
-                    } else if (log?.notificationType === 3) {
-                      type = "shared";
-                    }
+              {Array.isArray(getNotificationLogByUserIdQuery?.data?.body) &&
+                getNotificationLogByUserIdQuery?.data?.body
+                  ?.sort((a: any, b: any) => {
+                    const dateA: any = new Date(a.createdDate);
+                    const dateB: any = new Date(b.createdDate);
+                    return dateB - dateA;
+                  })
+                  .slice(0, 4)
+                  .map((log: any, index: any) => {
+                    const getNotificationType = () => {
+                      let type: any = "";
+                      if (log?.notificationType === 0) {
+                        type = "liked";
+                      } else if (log?.notificationType === 1) {
+                        type = "disliked";
+                      } else if (log?.notificationType === 2) {
+                        type = "commented";
+                      } else if (log?.notificationType === 3) {
+                        type = "shared";
+                      }
 
-                    return type;
-                  };
-                  return (
-                    <li>
-                      <RowStandardModal
-                        key={index}
-                        logoPath={log?.user?.profileImgPath}
-                        isNotificationModal={true}
-                        notificationTime={convertDateTime(log?.createdDate)}
-                        notificationName={`${
-                          log?.user?.firstName
-                        } ${getNotificationType()} your post`}
-                      />
-                    </li>
-                  );
-                })}
+                      return type;
+                    };
+                    return (
+                      <li>
+                        <RowStandardModal
+                          key={index}
+                          logoPath={log?.user?.profileImgPath}
+                          isNotificationModal={true}
+                          notificationTime={convertDateTime(log?.createdDate)}
+                          notificationName={`${
+                            log?.user?.firstName
+                          } ${getNotificationType()} your post`}
+                        />
+                      </li>
+                    );
+                  })}
             </ul>
             <div className="text-center mb-2">
               <Link

@@ -6,8 +6,8 @@ const useGetUserDetailsQuery = () => {
     ["getUserDetailsQuery"],
     () => getUserDetails(),
     {
-      retry: true,
-      refetchInterval: 10000,
+      retry: false,
+      // refetchInterval: 10000,
       cacheTime: 0,
       onError: () => {
         console.log(Error);

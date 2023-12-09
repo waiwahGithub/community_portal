@@ -65,6 +65,12 @@ const MyLike = () => {
               You haven't like any post yet
             </p>
           )}
+
+          {!account?.id && (
+            <p className="ml-4 mb-5 text-md font-bold">
+              Please login to see your likes
+            </p>
+          )}
           {getNotificationLogByUserIdQuery?.data?.body
             ?.sort((a: any, b: any) => {
               const dateA: any = new Date(a.createdDate);

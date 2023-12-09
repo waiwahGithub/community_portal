@@ -1,10 +1,49 @@
+import { useEffect, useState } from "react";
+import { useSharePostQuery } from "../../hooks/use-PostQuery";
+import { useSharePostNotificationQuery } from "../../hooks/use-NotificationQuery";
+
 interface Props {
   className?: string;
   url?: any;
   onClose: () => void;
+  postId?: any;
+  targetUserId?: any;
 }
 
-const SocialSharing: React.FC<Props> = ({ url, onClose }) => {
+const SocialSharing: React.FC<Props> = ({
+  url,
+  onClose,
+  postId,
+  targetUserId,
+}) => {
+  // Global
+  const [accountQuery, setAccountQuery] = useState<any>(
+    localStorage.getItem("jwt_token")
+  );
+  const account = JSON.parse(accountQuery);
+
+  // State
+  const [isShowCopy, setIsShowCopy] = useState<boolean>(false);
+
+  // API
+  const sharePostQuery = useSharePostQuery(isShowCopy, account?.id, postId);
+  const sharePostNotificationQuery = useSharePostNotificationQuery(
+    isShowCopy,
+    account?.id,
+    postId,
+    targetUserId,
+    3
+  );
+
+  // useEffect
+  useEffect(() => {
+    if (sharePostQuery.isSuccess) {
+      console.log("Shared");
+      setIsShowCopy(false);
+      localStorage.setItem("needRefreshQuery", "true");
+    }
+  }, [sharePostQuery.isSuccess]);
+
   return (
     <>
       <div>
@@ -41,6 +80,21 @@ const SocialSharing: React.FC<Props> = ({ url, onClose }) => {
                         {url}
                       </p>
                     </div>
+
+                    <p
+                      className="underline cursor-pointer"
+                      onClick={() => {
+                        navigator.clipboard.writeText(url);
+                        setIsShowCopy(true);
+
+                        setTimeout(() => {
+                          setIsShowCopy(false);
+                        }, 1000);
+                      }}
+                    >
+                      Copy this link
+                    </p>
+                    <p className={`${isShowCopy ? "" : "hidden"}`}>copy!</p>
 
                     {/* <span>4.5K Shares</span> */}
 

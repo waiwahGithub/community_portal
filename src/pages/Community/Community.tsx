@@ -42,18 +42,9 @@ const Community = () => {
   const getUserByCommunityQuery = useGetUserByCommunityQuery(account?.id);
   // join
   const [isJoinBtnClicked, setIsJoinBtnClicked] = useState<boolean>(false);
-  const joinCommunity = useJoinCommunity(
-    isJoinBtnClicked,
-    account?.id,
-    communityId
-  );
-  // unjoin
-  const [isUnjoinBtnClicked, setIsUnjoinBtnClicked] = useState<boolean>(false);
-  const unjoinCommunity = useUnjoinCommunity(
-    isUnjoinBtnClicked,
-    account?.id,
-    communityId
-  );
+  const [isJoinClicked, setIsJoinClicked] = useState<boolean>(false);
+  const [isUnjoinClicked, setIsUnjoinClicked] = useState<boolean>(false);
+  const [joinCommunityId, setJoinCommunityId] = useState<any>();
   // create community
   const [isCreateCommunityBtnClicked, setIsCreateCommunityBtnClicked] =
     useState<boolean>(false);
@@ -66,6 +57,16 @@ const Community = () => {
     communityBio,
     communityLogoPath,
     communityName
+  );
+  const joinCommunity = useJoinCommunity(
+    isJoinClicked,
+    account?.id,
+    parseFloat(paramCommunityId || "")
+  );
+  const unjoinCommunity = useUnjoinCommunity(
+    isUnjoinClicked,
+    account?.id,
+    parseFloat(paramCommunityId || "")
   );
 
   // Functional Events
@@ -132,6 +133,39 @@ const Community = () => {
     return communityUsersCount;
   }
 
+  function checkUserCommunityJoin() {
+    const community = getAllCommunityMembersQuery?.data?.body.find(
+      (item: any) =>
+        item.community.communityID === parseFloat(paramCommunityId || "") &&
+        item.status === 1
+    );
+    if (!community) {
+      return "Join";
+    }
+
+    const userFound = getAllCommunityMembersQuery?.data?.body.find(
+      (item: any) => item.user.id === account?.id && item.status === 1
+    );
+
+    if (userFound) {
+      return "Joined";
+    } else {
+      return "Join";
+    }
+  }
+
+  const joinOnClicked = () => {
+    if (!account?.id) {
+      alert("Please login");
+      return;
+    }
+    if (checkUserCommunityJoin() === "Join") {
+      setIsJoinClicked(true);
+    } else if (checkUserCommunityJoin() === "Joined") {
+      setIsUnjoinClicked(true);
+    }
+  };
+
   // useEffect
   useEffect(() => {
     const communityData = getCommunitiesQuery.data?.body.find(
@@ -141,6 +175,18 @@ const Community = () => {
     );
     setGetCommunityData(communityData);
   });
+
+  useEffect(() => {
+    if (unjoinCommunity.data) {
+      getCommunitiesQuery?.refetch();
+    }
+  }, [unjoinCommunity.data]);
+
+  useEffect(() => {
+    if (joinCommunity.data) {
+      getCommunitiesQuery?.refetch();
+    }
+  }, [joinCommunity.data]);
 
   return (
     <div className="bg-[#F0F2F5] min-h-screen ">
@@ -167,7 +213,7 @@ const Community = () => {
             Members
           </p>
           <RoundedButton
-            text="Joined"
+            text={checkUserCommunityJoin()}
             className="text-sm w-4/4 ml-2 row-end-4 bg-[#d25a5f] text-white cursor-default opacity-50"
             onClickButton={() => {}}
           />
@@ -182,13 +228,15 @@ const Community = () => {
         <div
           className={`${widthSize.mediumDevice ? "basis-6/12" : "basis-5/12"}`}
         >
-          <AdvanceModalWithBtn
-            modalOpenBtnName="Create a post"
-            modalTitle="Create a post"
-            className="bg-white h-10 ml-4 mb-5"
-            isShowCreatePostModal={true}
-            communityId={paramCommunityId}
-          />
+          {account?.id && (
+            <AdvanceModalWithBtn
+              modalOpenBtnName="Create a post"
+              modalTitle="Create a post"
+              className="bg-white h-10 ml-4 mb-5"
+              isShowCreatePostModal={true}
+              communityId={paramCommunityId}
+            />
+          )}
           {getAllPostsQuery?.data?.body
             ?.filter(
               (post: any) =>
@@ -258,7 +306,7 @@ const Community = () => {
               <p className="font-medium px-3 text-sm pt-3">Admin</p>
               <p className="flex px-3 pb-3">
                 <img
-                  src="https://picsum.photos/32/32/?random"
+                  src={getCommunityData?.user?.profileImgPath}
                   className="w-[40px] rounded-full"
                 />
                 <span className="text-sm text-gray-600 mt-2 ml-4">
@@ -266,8 +314,13 @@ const Community = () => {
                 </span>
               </p>
               <hr />
-              <p className="text-center text-sm py-3 hover:bg-gray-100 hover:cursor-pointer">
-                Leave community
+              <p
+                className="text-center text-sm py-3 hover:bg-gray-100 hover:cursor-pointer"
+                onClick={joinOnClicked}
+              >
+                {checkUserCommunityJoin() === "Joined"
+                  ? "Leave community"
+                  : "Join community"}
               </p>
               <footer className="flex items-center justify-between"></footer>
             </article>

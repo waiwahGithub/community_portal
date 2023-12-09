@@ -9,6 +9,7 @@ import {
   useAddLikeToPostQuery,
   useGetAllPostsQuery,
   useGetLikeByUserAndPostQuery,
+  useGetLikesQuery,
   useGetPostTabulationQuery,
   useGetShareQuery,
   useSharePostQuery,
@@ -16,6 +17,11 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useGetCommunitiesQuery } from "../../hooks/use-CommunityQuery";
 import { posix } from "path";
+import {
+  useAddLikeToPostNotificationQuery,
+  useSharePostNotificationQuery,
+  useUpdateUserNotificationStatusQuery,
+} from "../../hooks/use-NotificationQuery";
 
 const Home = () => {
   const widthSize = WidthSizeDetection();
@@ -36,9 +42,12 @@ const Home = () => {
   const [likeStatuses, setLikeStatuses] = useState<any>({});
   const [likeCounts, setLikeCounts] = useState<any>({});
   const [tempLikeCounts, setTempLikeCounts] = useState<any>({});
+  const [targetedUserId, setTargetedUserId] = useState<any>();
+  const [isSharedClicked, setIsSharedClicked] = useState<boolean>(false);
 
   // API
   const getAllPostsQuery = useGetAllPostsQuery();
+  const getLikesQuery = useGetLikesQuery();
   const addLikeToPostQuery = useAddLikeToPostQuery(
     isLikeClicked,
     account?.id,
@@ -49,6 +58,33 @@ const Home = () => {
     account?.id,
     getPostId
   );
+  const addLikeToPostNotificationQuery1 = useAddLikeToPostNotificationQuery(
+    isLikeClicked,
+    account?.id,
+    getPostId,
+    targetedUserId,
+    0
+  );
+  const addLikeToPostNotificationQuery2 = useAddLikeToPostNotificationQuery(
+    isDislikeClicked,
+    account?.id,
+    getPostId,
+    targetedUserId,
+    1
+  );
+  const sharePostNotificationQuery = useSharePostNotificationQuery(
+    isSharedClicked,
+    account?.id,
+    getPostId,
+    targetedUserId,
+    3
+  );
+  const updateUserNotificationStatusQuery =
+    useUpdateUserNotificationStatusQuery(
+      isLikeClicked || isDislikeClicked || isSharedClicked,
+      targetedUserId,
+      1
+    );
 
   // Funtional Events
   const convertDateTime = (createdDate: any) => {
@@ -68,8 +104,18 @@ const Home = () => {
     }
   };
 
-  const likeBtnFromHome = (postId: any, likeStatus?: any) => {
+  const likeBtnFromHome = (
+    postId: any,
+    likeStatus?: any,
+    targetedUserId?: any
+  ) => {
+    if (!account?.id) {
+      alert("Please login");
+      return;
+    }
+    localStorage.setItem("needRefreshQuery", "true");
     setGetPostId(postId);
+    setTargetedUserId(targetedUserId);
     setIsLikeClicked(true);
 
     setLikeStatuses((prevStatuses: any) => ({
@@ -83,8 +129,20 @@ const Home = () => {
     }));
   };
 
-  const dislikeBtnFromHome = (postId: any, likeStatus?: any) => {
+  const dislikeBtnFromHome = (
+    postId: any,
+    likeStatus?: any,
+    targetedUserId?: any
+  ) => {
+    if (!account?.id) {
+      alert("Please login");
+      return;
+    }
+
+    localStorage.setItem("needRefreshQuery", "true");
+
     setGetPostId(postId);
+    setTargetedUserId(targetedUserId);
     setIsDislikeClicked(true);
 
     setLikeStatuses((prevStatuses: any) => ({
@@ -97,6 +155,31 @@ const Home = () => {
       [postId]: (prevCounts[postId] || likeCounts[postId] || 0) - 1,
     }));
   };
+
+  function countLikeInPost() {
+    const likeCount: any = {};
+
+    getLikesQuery?.data?.body.forEach((item: any) => {
+      const postID = item.post.postID;
+      const status = item.status || 0;
+
+      if (status === 1) {
+        if (likeCount[postID]) {
+          likeCount[postID]++;
+        } else {
+          likeCount[postID] = 1;
+        }
+      } else if (status === 0) {
+        if (likeCount[postID]) {
+          likeCount[postID]--;
+        } else {
+          likeCount[postID] = -1;
+        }
+      }
+    });
+
+    return likeCount;
+  }
 
   // useEffect
   useEffect(() => {
@@ -147,6 +230,18 @@ const Home = () => {
     }));
   }, [getAllPostsQuery?.data, tempLikeCounts]);
 
+  useEffect(() => {
+    if (addLikeToPostQuery.data) {
+      getLikesQuery?.refetch();
+    }
+  }, [addLikeToPostQuery.data]);
+
+  useEffect(() => {
+    if (addDislikeToPostQuery.data) {
+      getLikesQuery?.refetch();
+    }
+  }, [addDislikeToPostQuery.data]);
+
   return (
     <div className="bg-[#F0F2F5] min-h-screen ">
       <Nav />
@@ -185,11 +280,7 @@ const Home = () => {
                     postTitle={post?.postTitle}
                     postContent={post?.postContent}
                     profileImgSrc={post?.postImgPath}
-                    likeCount={
-                      (tempLikeCounts[post?.postID] !== undefined
-                        ? tempLikeCounts[post?.postID]
-                        : post?.likes?.length) || 0
-                    }
+                    likeCount={countLikeInPost()[post?.postID]}
                     commentCount={12}
                     targetedUserId={post?.user?.id}
                     nameAndDate={
@@ -209,10 +300,18 @@ const Home = () => {
                     }
                     isHomePage={true}
                     likeBtnFromHome={() => {
-                      likeBtnFromHome(post?.postID, matchingLike?.status);
+                      likeBtnFromHome(
+                        post?.postID,
+                        matchingLike?.status,
+                        post?.user?.id
+                      );
                     }}
                     dislikeBtnFromHome={() => {
-                      dislikeBtnFromHome(post?.postID, matchingLike?.status);
+                      dislikeBtnFromHome(
+                        post?.postID,
+                        matchingLike?.status,
+                        post?.user?.id
+                      );
                     }}
                   />
                 );
