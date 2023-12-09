@@ -3,11 +3,16 @@ import { imgBase64 } from "../../assets/base64/imgBase64";
 import WidthSizeDetection from "../../assets/config/WidthSizeDetection";
 import ImageContainer from "../image/Image";
 import Link from "../link/Link";
+import { useState } from "react";
 
 const SideBar = () => {
   const widthSize = WidthSizeDetection();
   const navigate = useNavigate();
   const location = useLocation();
+  const [accountQuery, setAccountQuery] = useState<any>(
+    localStorage.getItem("jwt_token")
+  );
+  const account = JSON.parse(accountQuery);
 
   const signOuBtnHandler = () => {
     localStorage.removeItem("fb_info");
@@ -218,97 +223,102 @@ const SideBar = () => {
                 />
               </a>
             </li>
-            <li className="flex flex-row">
-              <a
-                className={`${
-                  widthSize.mediumDevice ? "w-[70px]" : "basis-1/2"
-                } `}
-              ></a>
-              <a
-                href="#"
-                className={`flex ${
-                  widthSize.mediumDevice ? "basis-2/2" : "basis-1/2"
-                } items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-100  group`}
-              >
-                <ImageContainer
-                  src={imgBase64.userDashboardIcon}
-                  className="w-5"
-                />
-                <Link
-                  className="flex-1 ml-3 whitespace-nowrap"
-                  text=" User dashboard"
-                  path="/dashboard/user"
-                />
-              </a>
-            </li>
-            <li className="flex flex-row">
-              <a
-                className={`${
-                  widthSize.mediumDevice ? "w-[70px]" : "basis-1/2"
-                } `}
-              ></a>
-              <a
-                href="#"
-                className={`flex ${
-                  widthSize.mediumDevice ? "basis-2/2" : "basis-1/2"
-                } items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-100  group`}
-              >
-                <ImageContainer
-                  src={imgBase64.userProfileIcon}
-                  className="w-5"
-                />
-                <Link
-                  className="flex-1 ml-3 whitespace-nowrap"
-                  text="User profile"
-                  path="/profile"
-                />
-              </a>
-            </li>
-            {/* // Todo: need to handle the check whether the user type it is admin or user */}
-            <li className="flex flex-row">
-              <a
-                className={`${
-                  widthSize.mediumDevice ? "w-[70px]" : "basis-1/2"
-                } `}
-              ></a>
-              <a
-                href="#"
-                className={`flex ${
-                  widthSize.mediumDevice ? "basis-2/2" : "basis-1/2"
-                } items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-100  group`}
-              >
-                <ImageContainer
-                  src={imgBase64.adminDashboardIcon}
-                  className="w-5"
-                />
-                <Link
-                  className="flex-1 ml-3 whitespace-nowrap"
-                  text="Admin dashboard"
-                  path="/dashboard/admin"
-                />
-              </a>
-            </li>
-            {/* // Todo: need to handle the check whether it is login or logout */}
-            <li className="flex flex-row">
-              <a
-                className={`${
-                  widthSize.mediumDevice ? "w-[70px]" : "basis-1/2"
-                } `}
-              ></a>
-              <a
-                href="#"
-                className={`flex ${
-                  widthSize.mediumDevice ? "basis-2/2" : "basis-1/2"
-                } items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-100  group`}
-              >
-                <ImageContainer src={imgBase64.logoutIcon} className="w-5" />
-                <Link
-                  className="flex-1 ml-3 whitespace-nowrap"
-                  text="Logout"
-                  onClick={signOuBtnHandler}
-                />
-              </a>
-            </li>
+            {account?.id && (
+              <>
+                <li className="flex flex-row">
+                  <a
+                    className={`${
+                      widthSize.mediumDevice ? "w-[70px]" : "basis-1/2"
+                    } `}
+                  ></a>
+                  <a
+                    href="#"
+                    className={`flex ${
+                      widthSize.mediumDevice ? "basis-2/2" : "basis-1/2"
+                    } items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-100  group`}
+                  >
+                    <ImageContainer
+                      src={imgBase64.userDashboardIcon}
+                      className="w-5"
+                    />
+                    <Link
+                      className="flex-1 ml-3 whitespace-nowrap"
+                      text=" User dashboard"
+                      path="/dashboard/user"
+                    />
+                  </a>
+                </li>
+                <li className="flex flex-row">
+                  <a
+                    className={`${
+                      widthSize.mediumDevice ? "w-[70px]" : "basis-1/2"
+                    } `}
+                  ></a>
+                  <a
+                    href="#"
+                    className={`flex ${
+                      widthSize.mediumDevice ? "basis-2/2" : "basis-1/2"
+                    } items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-100  group`}
+                  >
+                    <ImageContainer
+                      src={imgBase64.userProfileIcon}
+                      className="w-5"
+                    />
+                    <Link
+                      className="flex-1 ml-3 whitespace-nowrap"
+                      text="User profile"
+                      path="/profile"
+                    />
+                  </a>
+                </li>
+                <li className="flex flex-row">
+                  <a
+                    className={`${
+                      widthSize.mediumDevice ? "w-[70px]" : "basis-1/2"
+                    } `}
+                  ></a>
+                  <a
+                    href="#"
+                    className={`flex ${
+                      widthSize.mediumDevice ? "basis-2/2" : "basis-1/2"
+                    } items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-100  group`}
+                  >
+                    <ImageContainer
+                      src={imgBase64.adminDashboardIcon}
+                      className="w-5"
+                    />
+                    <Link
+                      className="flex-1 ml-3 whitespace-nowrap"
+                      text="Admin dashboard"
+                      path="/dashboard/admin"
+                    />
+                  </a>
+                </li>
+                <li className="flex flex-row">
+                  <a
+                    className={`${
+                      widthSize.mediumDevice ? "w-[70px]" : "basis-1/2"
+                    } `}
+                  ></a>
+                  <a
+                    href="#"
+                    className={`flex ${
+                      widthSize.mediumDevice ? "basis-2/2" : "basis-1/2"
+                    } items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-100  group`}
+                  >
+                    <ImageContainer
+                      src={imgBase64.logoutIcon}
+                      className="w-5"
+                    />
+                    <Link
+                      className="flex-1 ml-3 whitespace-nowrap"
+                      text="Logout"
+                      onClick={signOuBtnHandler}
+                    />
+                  </a>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </aside>

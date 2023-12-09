@@ -136,12 +136,19 @@ const Post: React.FC<Props> = (props) => {
 
   // API
   const getCommentQuery = useGetCommentQuery();
-  const updateLikeStatusByUserAndPostQuery =
+  const updateLikeStatusByUserAndPostQuery1 =
     useUpdateLikeStatusByUserAndPostQuery(
-      (isLikeClicked || isDislikeClicked) && isUserFound,
+      isLikeClicked && isUserFound,
       account?.id,
       parseFloat(postId || ""),
-      isLikeClicked ? 1 : isDislikeClicked ? 0 : 0
+      1
+    );
+  const updateLikeStatusByUserAndPostQuery2 =
+    useUpdateLikeStatusByUserAndPostQuery(
+      isDislikeClicked && isUserFound,
+      account?.id,
+      parseFloat(postId || ""),
+      0
     );
   const getShareQuery = useGetShareQuery();
   const commentOnPostQuery = useCommentOnPostQuery(
@@ -160,27 +167,34 @@ const Post: React.FC<Props> = (props) => {
     account?.id,
     parseFloat(postId || "")
   );
-  const sharePostQuery = useSharePostQuery(
-    shareBtnClicked,
-    account?.id,
-    postId
-  );
+  // const sharePostQuery = useSharePostQuery(
+  //   shareBtnClicked,
+  //   account?.id,
+  //   postId
+  // );
 
   // 0=Like, 1=dislike, 2=comment, 3=share, 4=follow, 5=unfollow,6=member
-  const addLikeToPostNotificationQuery = useAddLikeToPostNotificationQuery(
-    isLikeClicked || isDislikeClicked,
+  const addLikeToPostNotificationQuery1 = useAddLikeToPostNotificationQuery(
+    isLikeClicked,
     account?.id,
     postId,
     TargetedUserId,
-    isDislikeClicked ? 1 : 0
+    0
   );
-  const sharePostNotificationQuery = useSharePostNotificationQuery(
-    isShared,
+  const addLikeToPostNotificationQuery2 = useAddLikeToPostNotificationQuery(
+    isDislikeClicked,
     account?.id,
     postId,
     TargetedUserId,
-    3
+    1
   );
+  // const sharePostNotificationQuery = useSharePostNotificationQuery(
+  //   isShared,
+  //   account?.id,
+  //   postId,
+  //   TargetedUserId,
+  //   3
+  // );
   const commentOnPostNotificationQuery = useCommentOnPostNotificationQuery(
     isComment,
     account?.id,
@@ -190,32 +204,49 @@ const Post: React.FC<Props> = (props) => {
   );
   const updateUserNotificationStatusQuery =
     useUpdateUserNotificationStatusQuery(
-      isLikeClicked || isDislikeClicked,
+      isLikeClicked || isDislikeClicked || isShared,
       TargetedUserId,
       1
     );
 
   // Functional events
   const likeIconOnClickHandler = () => {
+    if (!account?.id) {
+      alert("Please login");
+      return;
+    }
     if (isHomePage) return;
     if (!isLiked) {
+      localStorage.setItem("needRefreshQuery", "true");
       setIsLiked(true);
       setIsDisliked(false);
       setIsLikeClicked(true);
+      setIsDislikeClicked(false);
     }
   };
 
   const dislikeIconOnClickHandler = () => {
+    if (!account?.id) {
+      alert("Please login");
+      return;
+    }
     if (isHomePage) return;
     if (!isDisiked) {
+      localStorage.setItem("needRefreshQuery", "true");
       setIsDisliked(true);
       setIsLiked(false);
+      setIsLikeClicked(false);
       setIsDislikeClicked(true);
     }
   };
 
   const shareOnclickHandler = () => {
+    if (!account?.id) {
+      alert("Please login");
+      return;
+    }
     setIsShared(true);
+    localStorage.setItem("needRefreshQuery", "true");
   };
 
   const closeModal = () => {
@@ -223,6 +254,10 @@ const Post: React.FC<Props> = (props) => {
   };
 
   const onChangeCommentHandler = (e: any) => {
+    if (!account?.id) {
+      alert("Please login");
+      return;
+    }
     setCommentInputValue(e.target.value);
   };
 
@@ -309,24 +344,53 @@ const Post: React.FC<Props> = (props) => {
   // useEffect
   useEffect(() => {
     if (commentOnPostQuery?.data) {
-      window.location.reload();
+      // window.location.reload();
+      getCommentQuery?.refetch();
+      setCommentInputValue("");
     }
   }, [commentOnPostQuery.data]);
 
   useEffect(() => {
-    countLikeInPost();
-  }, [isLiked, isDisiked]);
+    if (addLikeToPostQuery.data) {
+      getLikesQuery?.refetch();
+      getLikeByUserAndPostQuery?.refetch();
+    }
+  }, [addLikeToPostQuery.data]);
 
   useEffect(() => {
-    if (updateLikeStatusByUserAndPostQuery.data) {
-      window.location.reload();
+    if (addDislikeToPostQuery.data) {
+      getLikesQuery?.refetch();
+      getLikeByUserAndPostQuery?.refetch();
     }
-  }, [updateLikeStatusByUserAndPostQuery.data]);
+  }, [addDislikeToPostQuery.data]);
+
+  useEffect(() => {
+    if (updateLikeStatusByUserAndPostQuery1.data) {
+      getLikesQuery?.refetch();
+      getLikeByUserAndPostQuery?.refetch();
+    }
+  }, [updateLikeStatusByUserAndPostQuery1.data]);
+
+  useEffect(() => {
+    if (updateLikeStatusByUserAndPostQuery2.data) {
+      getLikesQuery?.refetch();
+      getLikeByUserAndPostQuery?.refetch();
+    }
+  }, [updateLikeStatusByUserAndPostQuery2.data]);
+
+  useEffect(() => {
+    if (updateLikeStatusByUserAndPostQuery2.data) {
+      getLikesQuery?.refetch();
+      getLikeByUserAndPostQuery?.refetch();
+    }
+  }, [updateLikeStatusByUserAndPostQuery2.data]);
 
   return (
     <div className={`mb-10 px-1 w-full lg:px-4 ${className}`}>
       <article className="overflow-hidden rounded-lg shadow-lg bg-white">
-        <a href={`/post/post-detail?postId=${postId}`}>
+        <a
+          href={`/post/post-detail?postId=${postId}&targetuserid=${TargetedUserId}`}
+        >
           <ImageContainer
             src={profileImgSrc ? profileImgSrc : carImg}
             className="block h-auto w-full"
@@ -468,6 +532,8 @@ const Post: React.FC<Props> = (props) => {
           <SocialSharing
             onClose={closeModal}
             url={`http://localhost:3000/post/post-detail?postId=${postId}`}
+            postId={postId}
+            targetUserId={TargetedUserId}
           />
         )}
 
@@ -485,7 +551,12 @@ const Post: React.FC<Props> = (props) => {
               text="Comment"
               className="text-white bg-red-700 hover:bg-red-500 ml-3 mt-3 mb-3"
               onClickButton={() => {
+                if (!account?.id) {
+                  alert("Please login");
+                  return;
+                }
                 setIsComment(true);
+                localStorage.setItem("needRefreshQuery", "true");
               }}
             />
             <hr className="mb-2" />

@@ -370,10 +370,10 @@ const LoginOrSignupModal: React.FC<Props> = (props) => {
                     className={`bg-[#d25a5f] text-white hover:bg-[#c72a2fe3] disabled disabled:opacity-[70%] outline-none focus:outline-none mt-2 mb-1 w-full h-9 ${continueBtnClass}`}
                     onClickButton={onClickContinueBtn}
                   />
-                  <Link
+                  {/* <Link
                     text="Forgot password"
                     className="text-xs underline text-blue-600 text-left"
-                  />
+                  /> */}
                 </div>
                 <>
                   <div className="relative p-0 text-center">
@@ -382,11 +382,11 @@ const LoginOrSignupModal: React.FC<Props> = (props) => {
                     </p>
                   </div>
                   <div className="relative p-6 text-center">
-                    <RoundedButton
+                    {/* <RoundedButton
                       text="Continue with Google"
                       className="bg-white text-black hover:bg-[#d1d1d1e3] border mt-2 mb-1 w-full h-9 flex items-center justify-center"
                       imgSrc="https://cdn.pgimgs.com/hive-ui/static/v0.1.28/logo/google.svg"
-                    />
+                    /> */}
                     <LoginSocialFacebook
                       appId={process.env.REACT_APP_FB_APP_ID!}
                       onResolve={(response: any) => {

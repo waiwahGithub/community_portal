@@ -45,6 +45,10 @@ const CommunityModal: React.FC<Props> = (props) => {
 
   // Functional Events
   const joinOnClicked = (communityId?: any, joinStatus?: any) => {
+    if (!account?.id) {
+      alert("Please login");
+      return;
+    }
     if (joinStatus === "Join") {
       setJoinCommunityId(communityId);
       setIsJoinClicked(true);

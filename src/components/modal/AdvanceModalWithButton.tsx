@@ -378,6 +378,7 @@ const AdvanceModalWithBtn: React.FC<Props> = (props) => {
   useEffect(() => {
     if (createCommunityQuery.data?.body) {
       // console.log(createCommunityQuery.data?.body);
+      setIsPostBtnClicked(false);
       window.location.reload();
       // alert("Community created");
     }

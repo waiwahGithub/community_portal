@@ -194,6 +194,10 @@ const Friend = () => {
   }
 
   const joinOnClicked = () => {
+    if (!account?.id) {
+      alert("Please login");
+      return;
+    }
     if (checkFriendFollow() === "Follow") {
       setIsJoinClicked(true);
     } else if (checkFriendFollow() === "Unfollow") {
