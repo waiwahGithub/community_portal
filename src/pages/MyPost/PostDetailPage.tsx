@@ -69,6 +69,23 @@ const PostDetailPage = () => {
     return `${day} ${month}, ${year}`;
   };
 
+  const convertDateTime = (createdDate: any) => {
+    const currentDate = new Date().getTime();
+    const difference = currentDate - createdDate;
+
+    const minutesAgo = Math.floor(difference / (1000 * 60));
+    const hoursAgo = Math.floor(difference / (1000 * 60 * 60));
+    const daysAgo = Math.floor(difference / (1000 * 60 * 60 * 24));
+
+    if (minutesAgo < 60) {
+      return `${minutesAgo} min${minutesAgo !== 1 ? "s" : ""} ago`;
+    } else if (hoursAgo < 24) {
+      return `${hoursAgo} hr${hoursAgo !== 1 ? "s" : ""} ago`;
+    } else {
+      return `${daysAgo} day${daysAgo !== 1 ? "s" : ""} ago`;
+    }
+  };
+
   const countUserFollowers = () => {
     const totalFollowers: any = {};
 
@@ -190,6 +207,11 @@ const PostDetailPage = () => {
                   shareCount={45}
                   targetedUserId={post?.user?.id}
                   isPostDetailPage={true}
+                  nameAndDate={
+                    post?.user?.firstName +
+                    " . " +
+                    convertDateTime(post?.createdDate)
+                  }
                 />
               );
             }

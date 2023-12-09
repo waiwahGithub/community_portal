@@ -3,9 +3,11 @@ import { imgBase64 } from "../../assets/base64/imgBase64";
 import WidthSizeDetection from "../../assets/config/WidthSizeDetection";
 import ImageContainer from "../image/Image";
 import Link from "../link/Link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import useGetUserDetailsQuery from "../../hooks/use-GetUserDetailsQuery";
 
 const SideBar = () => {
+  // Global
   const widthSize = WidthSizeDetection();
   const navigate = useNavigate();
   const location = useLocation();
@@ -14,6 +16,13 @@ const SideBar = () => {
   );
   const account = JSON.parse(accountQuery);
 
+  // State
+  const [adminRole, setAdminRole] = useState<any>(false);
+
+  // API
+  const getUserDetailsQuery = useGetUserDetailsQuery();
+
+  // Functional Events
   const signOuBtnHandler = () => {
     localStorage.removeItem("fb_info");
     localStorage.removeItem("jwt_token");
@@ -23,6 +32,17 @@ const SideBar = () => {
       navigate("/");
     }
   };
+
+  // useEffect
+  useEffect(() => {
+    if (getUserDetailsQuery?.data) {
+      getUserDetailsQuery?.data?.body?.map((user: any) => {
+        if (user?.id === account?.id && user?.userType === "admin") {
+          setAdminRole(true);
+        }
+      });
+    }
+  }, [getUserDetailsQuery?.data]);
 
   return (
     <>
@@ -271,29 +291,31 @@ const SideBar = () => {
                     />
                   </a>
                 </li>
-                <li className="flex flex-row">
-                  <a
-                    className={`${
-                      widthSize.mediumDevice ? "w-[70px]" : "basis-1/2"
-                    } `}
-                  ></a>
-                  <a
-                    href="#"
-                    className={`flex ${
-                      widthSize.mediumDevice ? "basis-2/2" : "basis-1/2"
-                    } items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-100  group`}
-                  >
-                    <ImageContainer
-                      src={imgBase64.adminDashboardIcon}
-                      className="w-5"
-                    />
-                    <Link
-                      className="flex-1 ml-3 whitespace-nowrap"
-                      text="Admin dashboard"
-                      path="/dashboard/admin"
-                    />
-                  </a>
-                </li>
+                {adminRole && (
+                  <li className="flex flex-row">
+                    <a
+                      className={`${
+                        widthSize.mediumDevice ? "w-[70px]" : "basis-1/2"
+                      } `}
+                    ></a>
+                    <a
+                      href="#"
+                      className={`flex ${
+                        widthSize.mediumDevice ? "basis-2/2" : "basis-1/2"
+                      } items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-100  group`}
+                    >
+                      <ImageContainer
+                        src={imgBase64.adminDashboardIcon}
+                        className="w-5"
+                      />
+                      <Link
+                        className="flex-1 ml-3 whitespace-nowrap"
+                        text="Admin dashboard"
+                        path="/dashboard/admin"
+                      />
+                    </a>
+                  </li>
+                )}
                 <li className="flex flex-row">
                   <a
                     className={`${
