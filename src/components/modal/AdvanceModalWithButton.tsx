@@ -106,6 +106,8 @@ const AdvanceModalWithBtn: React.FC<Props> = (props) => {
   const [isJoinClicked, setIsJoinClicked] = useState<boolean>(false);
   const [isUnjoinClicked, setIsUnjoinClicked] = useState<boolean>(false);
   const [filterSearchFriend, setFilterSearchFriend] = useState<any>();
+  const [selectedUserType, setSelectedUserType] =
+    useState<any>(typePlaceholder);
 
   // API
   const createPostQuery = useCreatePostQuery(
@@ -145,7 +147,7 @@ const AdvanceModalWithBtn: React.FC<Props> = (props) => {
     lNameInputValue,
     pwdInputValue,
     emailInputValue,
-    typeInputValue,
+    selectedUserType,
     bioInputValue,
     1,
     inputValueProfileImage
@@ -155,7 +157,7 @@ const AdvanceModalWithBtn: React.FC<Props> = (props) => {
     userIdPlaceholder,
     fNameInputValue,
     lNameInputValue,
-    typeInputValue,
+    selectedUserType,
     bioInputValue,
     inputValueProfileImage
   );
@@ -641,7 +643,7 @@ const AdvanceModalWithBtn: React.FC<Props> = (props) => {
                       }}
                       value={bioInputValue}
                     />
-                    <TextBox
+                    {/* <TextBox
                       placeholder="User type"
                       type={textBoxTypes.Text}
                       className={`w-full text-sm text-gray-900 mb-2 focus:ring-blue-500 focus:border-blue-500 ${
@@ -651,8 +653,20 @@ const AdvanceModalWithBtn: React.FC<Props> = (props) => {
                         setTypeInputValue(e.target.value);
                       }}
                       value={typeInputValue}
-                      disabled={isUserEditModal ? true : false}
-                    />
+                      // disabled={isUserEditModal ? true : false}
+                    /> */}
+                    <select
+                      id="userType"
+                      className="shadow appearance-none border rounded py-2 px-3 leading-tight focus:outline-none focus:shadow-outline w-full text-sm text-gray-900 mb-2 focus:ring-blue-500 focus:border-blue-500 "
+                      value={selectedUserType}
+                      onChange={(e) => {
+                        setSelectedUserType(e.target.value);
+                      }}
+                    >
+                      <option selected>Choose a type</option>
+                      <option value="admin">Admin</option>
+                      <option value="user">User</option>
+                    </select>
                     <ImageContainer
                       src={
                         base64Image ||

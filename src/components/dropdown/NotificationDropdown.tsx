@@ -84,6 +84,7 @@ const NotificationDropdown = () => {
         className="bg-gray-100 rounded-full w-[25px] h-[25px]  mt-1 mr-5 cursor-pointer"
         onClick={() => {
           getNotificationLogByUserIdQuery?.refetch();
+          localStorage.setItem("needRefreshQuery", "false");
           setIsNotificationClick(true);
           setIsOpen(!isOpen);
         }}

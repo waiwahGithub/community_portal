@@ -2,18 +2,13 @@ import { useState } from "react";
 import WidthSizeDetection from "../../assets/config/WidthSizeDetection";
 import Nav from "../../components/Nav/Nav";
 import SideBar from "../../components/SideBar/SideBar";
-import { RoundedButton } from "../../components/button/Button";
-import CommunityModal from "../../components/modal/CommunityModal";
-import Post from "../../components/post/Post";
-import RowStandardModal from "../../components/modal/RowStandardModal";
 import ImageContainer from "../../components/image/Image";
 import useGetUserDetailsQuery from "../../hooks/use-GetUserDetailsQuery";
 import AdvanceModalWithBtn from "../../components/modal/AdvanceModalWithButton";
 
 const AdminDashboard = () => {
+  // Global
   const widthSize = WidthSizeDetection();
-
-  const [hasNotification, setHasNotification] = useState<any>(true);
 
   // State
   const [filterName, setFilterName] = useState<string>("");
