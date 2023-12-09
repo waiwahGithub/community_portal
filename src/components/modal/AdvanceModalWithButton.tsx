@@ -15,6 +15,12 @@ import {
   useUpdatedUserDetailsQuery,
 } from "../../hooks/use-UploadUserDetailsQuery";
 import { useCommentOnPostNotificationQuery } from "../../hooks/use-NotificationQuery";
+import useGetUserDetailsQuery from "../../hooks/use-GetUserDetailsQuery";
+import {
+  useFollowFriendQuery,
+  useGetAllFollowListQuery,
+  useUnfollowFriendQuery,
+} from "../../hooks/use-FriendQuery";
 
 interface Props {
   className?: string;
@@ -96,6 +102,10 @@ const AdvanceModalWithBtn: React.FC<Props> = (props) => {
   const [emailInputValue, setEmailInputValue] = useState(emailPlaceholder);
   const [lNameInputValue, setLNameInputValue] = useState(lNamePlaceholder);
   const [fNameInputValue, setFNameInputValue] = useState(fNamePlaceholder);
+  const [friendId, setFriendId] = useState<number>(0);
+  const [isJoinClicked, setIsJoinClicked] = useState<boolean>(false);
+  const [isUnjoinClicked, setIsUnjoinClicked] = useState<boolean>(false);
+  const [filterSearchFriend, setFilterSearchFriend] = useState<any>();
 
   // API
   const createPostQuery = useCreatePostQuery(
@@ -153,6 +163,18 @@ const AdvanceModalWithBtn: React.FC<Props> = (props) => {
     isUserDeletModal && isPostBtnClicked && isImageUploaded,
     userIdPlaceholder,
     0
+  );
+  const getUserDetailsQuery = useGetUserDetailsQuery();
+  const getAllFollowListQuery = useGetAllFollowListQuery();
+  const followFriendQuery = useFollowFriendQuery(
+    isJoinClicked,
+    account?.id,
+    friendId
+  );
+  const unfollowFriendQuery = useUnfollowFriendQuery(
+    isUnjoinClicked,
+    account?.id,
+    friendId
   );
 
   // onchange event function
@@ -310,6 +332,35 @@ const AdvanceModalWithBtn: React.FC<Props> = (props) => {
     }
   };
 
+  const countUserFollowers = () => {
+    const totalFollowers: any = {};
+
+    getAllFollowListQuery?.data?.body.forEach((item: any) => {
+      const friendID = item?.friendID;
+      const status = item?.status;
+      if (status === 1) {
+        if (totalFollowers[friendID]) {
+          totalFollowers[friendID]++;
+        } else {
+          totalFollowers[friendID] = 1;
+        }
+      }
+    });
+
+    return totalFollowers;
+  };
+
+  const joinOnClicked = (friendId?: any, joinStatus?: any) => {
+    if (joinStatus === "Follow") {
+      setFriendId(friendId);
+      setIsJoinClicked(true);
+    } else if (joinStatus === "Unfollow") {
+      setFriendId(friendId);
+      setIsUnjoinClicked(true);
+    }
+  };
+
+  // useEffect
   useEffect(() => {
     if (createPostQuery.data) {
       window.location.reload();
@@ -433,56 +484,75 @@ const AdvanceModalWithBtn: React.FC<Props> = (props) => {
                         placeholder="Search name"
                         type={textBoxTypes.Text}
                         className="w-full text-sm text-gray-900 mb-2 focus:ring-blue-500 focus:border-blue-500"
+                        onChange={(e) => {
+                          setFilterSearchFriend(e.target.value);
+                        }}
+                        value={filterSearchFriend}
                       />
                       <div className="h-[280px] overflow-auto">
-                        <RowStandardModal
-                          className="bg-white shadow rounded-lg my-2 mx-2 text-left"
-                          isFriendModal={true}
-                          followersCount={123}
-                          btnText="Follow"
-                          btnClassName="w-[80px]"
-                          friendName="Kelvin"
-                        />
-                        <RowStandardModal
-                          className="bg-white shadow rounded-lg my-2 mx-2 text-left"
-                          isFriendModal={true}
-                          followersCount={123}
-                          btnText="Follow"
-                          btnClassName="w-[80px]"
-                          friendName="Kelvin"
-                        />
-                        <RowStandardModal
-                          className="bg-white shadow rounded-lg my-2 mx-2 text-left"
-                          isFriendModal={true}
-                          followersCount={123}
-                          btnText="Follow"
-                          btnClassName="w-[80px]"
-                          friendName="Kelvin"
-                        />
-                        <RowStandardModal
-                          className="bg-white shadow rounded-lg my-2 mx-2 text-left"
-                          isFriendModal={true}
-                          followersCount={123}
-                          btnText="Follow"
-                          btnClassName="w-[80px]"
-                          friendName="Kelvin"
-                        />
-                        <RowStandardModal
-                          className="bg-white shadow rounded-lg my-2 mx-2 text-left"
-                          isFriendModal={true}
-                          followersCount={123}
-                          btnText="Follow"
-                          btnClassName="w-[80px]"
-                          friendName="Kelvin"
-                        />
-                        <RowStandardModal
-                          className="bg-white shadow rounded-lg my-2 mx-2 text-left"
-                          isFriendModal={true}
-                          followersCount={123}
-                          btnText="Follow"
-                          btnClassName="w-[80px]"
-                          friendName="Kelvin"
-                        />
+                        {getUserDetailsQuery?.data?.body
+                          ?.filter((user: any) =>
+                            user?.firstName
+                              .toLowerCase()
+                              .includes(filterSearchFriend?.toLowerCase())
+                          )
+                          ?.map((user: any) => {
+                            function checkFriendFollow(
+                              fiendId: any,
+                              userId: any
+                            ) {
+                              const friendFollow =
+                                getAllFollowListQuery?.data?.body.find(
+                                  (item: any) =>
+                                    item.friendID === user?.id &&
+                                    item.status === 1 &&
+                                    item?.user?.id === userId
+                                );
+                              if (!friendFollow) {
+                                return "Follow";
+                              }
+
+                              const userFound =
+                                getAllFollowListQuery?.data?.body.find(
+                                  (item: any) =>
+                                    item.friendID === user?.id &&
+                                    item.status === 1 &&
+                                    item?.user?.id === userId
+                                );
+
+                              if (userFound) {
+                                return "Unfollow";
+                              } else {
+                                return "Follow";
+                              }
+                            }
+
+                            if (user?.status === 1)
+                              return (
+                                <RowStandardModal
+                                  className="bg-white shadow rounded-lg my-2 mx-2"
+                                  isFriendModal={true}
+                                  followersCount={
+                                    countUserFollowers()[user.id] || 0
+                                  }
+                                  btnText={checkFriendFollow(
+                                    user?.id,
+                                    account?.id
+                                  )}
+                                  btnClassName="w-[80px]"
+                                  logoPath={user?.profileImgPath}
+                                  friendName={
+                                    user?.firstName + " " + user?.lastName
+                                  }
+                                  joinOnClicked={() => {
+                                    joinOnClicked(
+                                      user?.id,
+                                      checkFriendFollow(user?.id, account?.id)
+                                    );
+                                  }}
+                                />
+                              );
+                          })}
                       </div>
                     </div>
                   </>

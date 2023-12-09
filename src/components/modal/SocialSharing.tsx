@@ -42,9 +42,9 @@ const SocialSharing: React.FC<Props> = ({ url, onClose }) => {
                       </p>
                     </div>
 
-                    <span>4.5K Shares</span>
+                    {/* <span>4.5K Shares</span> */}
 
-                    <span className="text-red-400">Close this window</span>
+                    {/* <span className="text-red-400">Close this window</span> */}
                   </div>
                 </div>
               </div>

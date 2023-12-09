@@ -24,6 +24,7 @@ import UserDashboard from "./pages/Dashboard/UserDashboard";
 import AdminDashboard from "./pages/Dashboard/AdminDashboard";
 import MyComment from "./pages/MyComment/MyComment";
 import PostDetailPage from "./pages/MyPost/PostDetailPage";
+import Friend from "./pages/Friend/Friend";
 
 function App() {
   const [jwtToken, setJWTToken] = useState<any>(
@@ -68,6 +69,7 @@ function App() {
           <Route path="/privacy-policy" element={<PrivacyPolicy />}></Route>
           <Route path="/my-car-list" element={<MyCarList />}></Route>
           <Route path="/my-friend" element={<MyFriend />}></Route>
+          <Route path="/friend" element={<Friend />}></Route>
           <Route path="/notifications" element={<Notifications />}></Route>
           <Route path="/testpage-3" element={<ImageUpload />}></Route>
           <Route path="*" element={<Home />} />

@@ -125,7 +125,10 @@ const Dropdown: React.FC<TextBoxProps> = (props) => {
           </ul>
           <ul>
             <li>
-              <a href="#" className="flex px-4 py-2 hover:bg-gray-100 ">
+              <a
+                href="/dashboard/user"
+                className="flex px-4 py-2 hover:bg-gray-100 "
+              >
                 <ImageContainer
                   src={imgBase64.userDashboardIcon}
                   className="w-5 mr-2"

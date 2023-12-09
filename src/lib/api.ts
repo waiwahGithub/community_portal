@@ -844,3 +844,72 @@ export async function getAllNotification() {
     headers: headers,
   });
 }
+
+// get all follow
+// http://localhost:8080/community/follow/get
+export async function getAllFollowList() {
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  return axisFetch(`http://localhost:8080/community/follow/get`, {
+    method: "GET",
+    headers: headers,
+  });
+}
+
+// follow friend
+// http://localhost:8080/community/follow/get
+export async function followFriend(userId: any, friendId: any) {
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  return axisFetch(
+    `http://localhost:8080/community/users/${userId}/follow/${friendId}`,
+    {
+      method: "POST",
+      headers: headers,
+    }
+  );
+}
+
+// unfollow friend
+///user/{userId}/unfollow/{friendId}
+export async function unfollowFriend(userId: any, friendId: any) {
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  return axisFetch(
+    `http://localhost:8080/community/user/${userId}/unfollow/${friendId}`,
+    {
+      method: "PUT",
+      headers: headers,
+    }
+  );
+}
+
+// update notification status
+// http://localhost:8080/community/user/put/notification/status/20
+export async function updateUserNotificationStatus(
+  userId: any,
+  notificationStatus: any
+) {
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  const payload = JSON.stringify({
+    notificationStatus: notificationStatus,
+  });
+
+  return axisFetch(
+    `http://localhost:8080/community/user/put/notification/status/${userId}`,
+    {
+      method: "PUT",
+      headers: headers,
+      data: payload,
+    }
+  );
+}

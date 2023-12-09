@@ -80,7 +80,7 @@ const MyCommunity = () => {
             isShowCreateCommunityModal={true}
           />
           <p className="ml-5 mb-5 text-2xl font-bold">
-            You haven't join any community yet.
+            {/* You haven't join any community yet. */}
           </p>
           <hr className="basis-1/2 pt-4 mt-4 space-y-2 font-medium border-t border-gray-200" />
           <p className="ml-5 mb-5 text-md font-bold">Recommended Communities</p>
@@ -165,13 +165,13 @@ const MyCommunity = () => {
                   );
               })}
           </div>
-          <div className="text-center my-4">
+          {/* <div className="text-center my-4">
             <Link
               text="See more"
               path="/"
               className="text-sm underline text-gray-700 hover:text-gray-400"
             />
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

@@ -3,12 +3,17 @@ import WidthSizeDetection from "../../assets/config/WidthSizeDetection";
 import Nav from "../../components/Nav/Nav";
 import { RoundedButton } from "../../components/button/Button";
 import Post from "../../components/post/Post";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import {
   useCommentOnPostQuery,
   useGetAllPostsQuery,
 } from "../../hooks/use-PostQuery";
+import {
+  useFollowFriendQuery,
+  useGetAllFollowListQuery,
+  useUnfollowFriendQuery,
+} from "../../hooks/use-FriendQuery";
 
 const PostDetailPage = () => {
   const location = useLocation();
@@ -22,9 +27,22 @@ const PostDetailPage = () => {
 
   // State
   const userAccount = useRef<any>();
+  const [isJoinClicked, setIsJoinClicked] = useState<boolean>(false);
+  const [isUnjoinClicked, setIsUnjoinClicked] = useState<boolean>(false);
 
   // API
   const getAllPostsQuery = useGetAllPostsQuery();
+  const getAllFollowListQuery = useGetAllFollowListQuery();
+  const followFriendQuery = useFollowFriendQuery(
+    isJoinClicked,
+    account?.id,
+    parseFloat(postId || "")
+  );
+  const unfollowFriendQuery = useUnfollowFriendQuery(
+    isUnjoinClicked,
+    account?.id,
+    parseFloat(postId || "")
+  );
 
   // Functional Events
   const convertDate = (dateTime?: any) => {
@@ -50,6 +68,70 @@ const PostDetailPage = () => {
     return `${day} ${month}, ${year}`;
   };
 
+  const countUserFollowers = () => {
+    const totalFollowers: any = {};
+
+    getAllFollowListQuery?.data?.body.forEach((item: any) => {
+      const friendID = item?.friendID;
+      const status = item?.status;
+      if (status === 1) {
+        if (totalFollowers[friendID]) {
+          totalFollowers[friendID]++;
+        } else {
+          totalFollowers[friendID] = 1;
+        }
+      }
+    });
+
+    return totalFollowers;
+  };
+
+  function checkFriendFollow() {
+    const friendFollow = getAllFollowListQuery?.data?.body.find(
+      (item: any) =>
+        item.friendID === parseFloat(postId || "") &&
+        item.status === 1 &&
+        item?.user?.id === account?.id
+    );
+    if (!friendFollow) {
+      return "Follow";
+    }
+
+    const userFound = getAllFollowListQuery?.data?.body.find(
+      (item: any) =>
+        item.friendID === parseFloat(postId || "") &&
+        item.status === 1 &&
+        item?.user?.id === account?.id
+    );
+
+    if (userFound) {
+      return "Unfollow";
+    } else {
+      return "Follow";
+    }
+  }
+
+  const joinOnClicked = () => {
+    if (checkFriendFollow() === "Follow") {
+      setIsJoinClicked(true);
+    } else if (checkFriendFollow() === "Unfollow") {
+      setIsUnjoinClicked(true);
+    }
+  };
+
+  // useEffect
+  useEffect(() => {
+    if (followFriendQuery.data) {
+      window.location.reload();
+    }
+  }, [followFriendQuery.data]);
+
+  useEffect(() => {
+    if (unfollowFriendQuery.data) {
+      window.location.reload();
+    }
+  }, [unfollowFriendQuery.data]);
+
   return (
     <div className="bg-[#F0F2F5] min-h-screen ">
       <Nav />
@@ -70,12 +152,12 @@ const PostDetailPage = () => {
             {userAccount.current?.firstName}
           </p>
           <p className="ml-2 text-sm text-gray-500 font-light">
-            123,446 Followers
+            {countUserFollowers()?.[parseFloat(postId || "")] ?? 0} Followers
           </p>
           <RoundedButton
-            text="Followed"
-            className="text-sm w-3/4 ml-2 row-end-4 bg-[#d25a5f] text-white cursor-default opacity-50"
-            onClickButton={() => {}}
+            text={checkFriendFollow()}
+            className="text-sm w-3/4 ml-2 row-end-4 bg-[#d25a5f] text-white mr-5"
+            onClickButton={joinOnClicked}
           />
         </div>
       </div>
@@ -133,7 +215,8 @@ const PostDetailPage = () => {
               </p>
               <hr />
               <p className="text-center font-bold text-2xl my-5">
-                123K Followers
+                {countUserFollowers()?.[parseFloat(postId || "")] ?? 0}{" "}
+                Followers
               </p>
               <hr />
               <p className="font-medium px-3 text-sm pt-3"></p>
@@ -148,8 +231,11 @@ const PostDetailPage = () => {
                 </span>
               </p>
               <hr />
-              <p className="text-center text-sm py-3 hover:bg-gray-100 hover:cursor-pointer">
-                Unfollow
+              <p
+                className="text-center text-sm py-3 hover:bg-gray-100 hover:cursor-pointer"
+                onClick={joinOnClicked}
+              >
+                {checkFriendFollow()}
               </p>
               <footer className="flex items-center justify-between"></footer>
             </article>
