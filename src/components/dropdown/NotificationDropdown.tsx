@@ -2,7 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import { imgBase64 } from "../../assets/base64/imgBase64";
 import Link from "../link/Link";
 import RowStandardModal from "../modal/RowStandardModal";
-import { useGetNotificationLogByUserIdQuery } from "../../hooks/use-NotificationQuery";
+import {
+  useGetNotificationLogByUserIdQuery,
+  useUpdateUserNotificationStatusQuery,
+} from "../../hooks/use-NotificationQuery";
+import useGetUserDetailsQuery from "../../hooks/use-GetUserDetailsQuery";
 
 const NotificationDropdown = () => {
   // Global
@@ -14,11 +18,19 @@ const NotificationDropdown = () => {
   // State
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<any>(null);
+  const [isNotificationClick, setIsNotificationClick] =
+    useState<boolean>(false);
+  const [getUserData, setGetUserData] = useState<any>();
+
+  console.log(getUserData);
 
   // API
   const getNotificationLogByUserIdQuery = useGetNotificationLogByUserIdQuery(
     account?.id
   );
+  const updateUserNotificationStatusQuery =
+    useUpdateUserNotificationStatusQuery(isNotificationClick, account?.id, 0);
+  const getUserDetailsQuery = useGetUserDetailsQuery();
 
   // Functional events
   const convertDateTime = (createdDate: any) => {
@@ -53,13 +65,32 @@ const NotificationDropdown = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const userData = getUserDetailsQuery.data?.body.find(
+      (item: any) => item.id === account?.id && item.status === 1
+    );
+    setGetUserData(userData);
+  }, [getUserDetailsQuery.data]);
+
   return (
     <div className="relative inline-block text-left">
       <img
         className="bg-gray-100 rounded-full w-[25px] h-[25px]  mt-1 mr-5 cursor-pointer"
-        onClick={() => setIsOpen(!isOpen)}
-        src={imgBase64.notificationIcon}
+        onClick={() => {
+          setIsNotificationClick(true);
+          setIsOpen(!isOpen);
+          setGetUserData(null);
+        }}
+        src={
+          getUserData?.notificationStatus === 1
+            ? imgBase64.notificationIcon
+            : imgBase64.notificationIcon
+        }
       />
+
+      {getUserData?.notificationStatus === 1 && (
+        <div className="absolute top-0 left-0 h-3 w-3 bg-red-700 rounded-full"></div>
+      )}
       {isOpen && (
         <div
           ref={dropdownRef}

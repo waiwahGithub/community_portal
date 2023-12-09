@@ -6,6 +6,7 @@ import {
   getNotificationLogByUserId,
   getNotificationLogs,
   sharePostNotification,
+  updateUserNotificationStatus,
 } from "../lib/api";
 
 export const useAddLikeToPostNotificationQuery = (
@@ -130,4 +131,26 @@ export const useGetAllNotificationQuery = () => {
   );
 
   return getAllNotificationQuery;
+};
+
+export const useUpdateUserNotificationStatusQuery = (
+  enabled: any,
+  userId: any,
+  notificationStatus: any
+) => {
+  const updateUserNotificationStatusQuery = useQuery<any, Error>(
+    ["updateUserNotificationStatus"],
+    () => updateUserNotificationStatus(userId, notificationStatus),
+    {
+      enabled: enabled,
+      retry: true,
+      refetchInterval: 10000,
+      cacheTime: 0,
+      onError: () => {
+        console.log(Error);
+      },
+    }
+  );
+
+  return updateUserNotificationStatusQuery;
 };

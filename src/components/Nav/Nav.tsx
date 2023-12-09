@@ -9,7 +9,10 @@ import { useNavigate } from "react-router-dom";
 import { emptyCacheAndHardReload } from "../../store/app-actions";
 import WidthSizeDetection from "../../assets/config/WidthSizeDetection";
 import NotificationDropdown from "../dropdown/NotificationDropdown";
-import { useGetNotificationLogsQuery } from "../../hooks/use-NotificationQuery";
+import {
+  useGetNotificationLogsQuery,
+  useUpdateUserNotificationStatusQuery,
+} from "../../hooks/use-NotificationQuery";
 
 const Nav = () => {
   const navigate = useNavigate();
@@ -44,6 +47,8 @@ const Nav = () => {
 
   const [inputValueProfileImage, setInputValueProfileImage] = useState<any>();
   const [inputValuefirstName, setInputValuefirstName] = useState<any>();
+  const [isNotificationClick, setIsNotificationClick] =
+    useState<boolean>(false);
 
   const [isViewUserDetailsQuery, setIsViewUserDetailsQuery] =
     useState<boolean>(false);

@@ -20,6 +20,7 @@ import {
   useAddLikeToPostNotificationQuery,
   useCommentOnPostNotificationQuery,
   useSharePostNotificationQuery,
+  useUpdateUserNotificationStatusQuery,
 } from "../../hooks/use-NotificationQuery";
 import RowStandardModal from "../modal/RowStandardModal";
 import SocialSharing from "../modal/SocialSharing";
@@ -187,6 +188,12 @@ const Post: React.FC<Props> = (props) => {
     TargetedUserId,
     2
   );
+  const updateUserNotificationStatusQuery =
+    useUpdateUserNotificationStatusQuery(
+      isLikeClicked || isDislikeClicked,
+      TargetedUserId,
+      1
+    );
 
   // Functional events
   const likeIconOnClickHandler = () => {

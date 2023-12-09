@@ -12,6 +12,7 @@ import {
   useGetLikesQuery,
 } from "../../hooks/use-PostQuery";
 import { useGetNotificationLogByUserIdQuery } from "../../hooks/use-NotificationQuery";
+import { useGetAllFollowListQuery } from "../../hooks/use-FriendQuery";
 
 const UserDashboard = () => {
   const widthSize = WidthSizeDetection();
@@ -27,6 +28,7 @@ const UserDashboard = () => {
   const getAllPostsQuery = useGetAllPostsQuery();
   const getLikesQuery = useGetLikesQuery();
   const getCommentQuery = useGetCommentQuery();
+  const getAllFollowListQuery = useGetAllFollowListQuery();
 
   // Functional Events
   const countTotalPost = () => {
@@ -82,6 +84,42 @@ const UserDashboard = () => {
     return totalCommentCount;
   };
 
+  const countTotalFollowing = () => {
+    const totalFollowingCount: any = {};
+
+    getAllFollowListQuery?.data?.body.forEach((item: any) => {
+      const userId = item?.user?.id;
+      const status = item?.status;
+      if (status === 1) {
+        if (totalFollowingCount[userId]) {
+          totalFollowingCount[userId]++;
+        } else {
+          totalFollowingCount[userId] = 1;
+        }
+      }
+    });
+
+    return totalFollowingCount;
+  };
+
+  const countTotalFollower = () => {
+    const totalFollowerCount: any = {};
+
+    getAllFollowListQuery?.data?.body.forEach((item: any) => {
+      const userId = item?.friendID;
+      const status = item?.status;
+      if (status === 1) {
+        if (totalFollowerCount[userId]) {
+          totalFollowerCount[userId]++;
+        } else {
+          totalFollowerCount[userId] = 1;
+        }
+      }
+    });
+
+    return totalFollowerCount;
+  };
+
   return (
     <div className="bg-[#F0F2F5] min-h-screen ">
       <Nav />
@@ -109,13 +147,17 @@ const UserDashboard = () => {
             </div>
             <div className={`mb-0 px-1 w-1/3 lg:px-4 mt-16 `}>
               <article className="overflow-hidden rounded-lg shadow-lg bg-white text-center py-20">
-                <p className="font-bold text-[60px]">154</p>
+                <p className="font-bold text-[60px]">
+                  {countTotalFollowing()[account?.id]}
+                </p>
                 <p>Total Following</p>
               </article>
             </div>
             <div className={`mb-0 px-1 w-1/3 lg:px-4 mt-16 `}>
               <article className="overflow-hidden rounded-lg shadow-lg bg-white text-center py-20">
-                <p className="font-bold text-[60px]">34</p>
+                <p className="font-bold text-[60px]">
+                  {countTotalFollower()[account?.id] || 0}
+                </p>
                 <p>Total Followers</p>
               </article>
             </div>
