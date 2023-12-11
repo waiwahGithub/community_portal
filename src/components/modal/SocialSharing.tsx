@@ -38,7 +38,6 @@ const SocialSharing: React.FC<Props> = ({
   // useEffect
   useEffect(() => {
     if (sharePostQuery.isSuccess) {
-      console.log("Shared");
       setIsShowCopy(false);
       localStorage.setItem("needRefreshQuery", "true");
     }

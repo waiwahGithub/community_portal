@@ -226,7 +226,6 @@ const LoginOrSignupModal: React.FC<Props> = (props) => {
   }, [inputValue, inputPwdValue]);
 
   useEffect(() => {
-    // console.log("apiErrorInfo", token?.error?.message);
     if (token.error?.message === "User not found.") {
       alert(token.error?.message);
     } else if (token.error?.message === "Invalid password.") {
