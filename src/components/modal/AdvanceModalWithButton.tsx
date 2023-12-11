@@ -21,6 +21,7 @@ import {
   useGetAllFollowListQuery,
   useUnfollowFriendQuery,
 } from "../../hooks/use-FriendQuery";
+import LoadingSpinner from "../loadingSpinner/LoadingSpinner";
 
 interface Props {
   className?: string;
@@ -108,6 +109,8 @@ const AdvanceModalWithBtn: React.FC<Props> = (props) => {
   const [filterSearchFriend, setFilterSearchFriend] = useState<any>();
   const [selectedUserType, setSelectedUserType] =
     useState<any>(typePlaceholder);
+  const [isShowSpinningLoading, setIsShowSpinningLoading] =
+    useState<boolean>(false);
 
   // API
   const createPostQuery = useCreatePostQuery(
@@ -305,31 +308,48 @@ const AdvanceModalWithBtn: React.FC<Props> = (props) => {
         setIsPostBtnClicked(true);
       } else {
         console.error("Image upload failed.");
+        setIsShowSpinningLoading(false);
+        alert("Image upload failed.");
+        window.location.reload();
       }
     } catch (error) {
+      setIsShowSpinningLoading(false);
+      alert("Image server having issue, please try again later.");
+      window.location.reload();
       console.error("Error uploading image:", error);
     }
   };
 
   const onBtnClicked = () => {
+    if (!account?.id) {
+      alert("Please login");
+      return;
+    }
+
     if (isEditModal) {
       if (base64Image) {
+        setIsShowSpinningLoading(true);
         uploadImage();
       } else {
+        setIsShowSpinningLoading(true);
         setIsImageUploaded(true);
         setIsPostBtnClicked(true);
       }
     } else if (isDeleteModal || isActivateModal || isUserDeletModal) {
+      setIsShowSpinningLoading(true);
       setIsImageUploaded(true);
       setIsPostBtnClicked(true);
     } else if (isUserEditModal) {
       if (base64Image) {
+        setIsShowSpinningLoading(true);
         uploadImage();
       } else {
+        setIsShowSpinningLoading(true);
         setIsImageUploaded(true);
         setIsPostBtnClicked(true);
       }
     } else {
+      setIsShowSpinningLoading(true);
       uploadImage();
     }
   };
@@ -415,9 +435,16 @@ const AdvanceModalWithBtn: React.FC<Props> = (props) => {
       >
         {modalOpenBtnName}
       </button>
-      {showModal ? (
+
+      {isShowSpinningLoading ? (
+        <LoadingSpinner />
+      ) : showModal ? (
         <>
-          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none w-[400px] left-[40%]">
+          <div
+            className={`justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 ${
+              isShowSpinningLoading ? "" : "z-50"
+            } outline-none focus:outline-none w-[400px] left-[40%]`}
+          >
             <div className="relative w-auto my-6 mx-auto max-w-3xl">
               <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                 <div className="flex items-start justify-between">
@@ -462,7 +489,11 @@ const AdvanceModalWithBtn: React.FC<Props> = (props) => {
                         type={textBoxTypes.File}
                         onChange={handleImageUpload}
                         className="shadow-none border-none"
+                        accept=".jpg, .jpeg, .png"
                       />
+                      <p className="text-left ml-3 text-[11px] mt-0">
+                        Only accept .jpg, .jpeg, .png
+                      </p>
                       {/* <ImageContainer
                         src={base64Image || ""}
                         className="w-[10%]"
@@ -698,7 +729,7 @@ const AdvanceModalWithBtn: React.FC<Props> = (props) => {
               </div>
             </div>
           </div>
-          <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+          <div className={`opacity-25 fixed inset-0 z-40 bg-black`}></div>
         </>
       ) : null}
     </>
