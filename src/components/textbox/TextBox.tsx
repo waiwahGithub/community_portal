@@ -7,10 +7,12 @@ interface TextBoxProps {
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   value?: string;
   disabled?: boolean;
+  accept?: string;
 }
 
 const TextBox: React.FC<TextBoxProps> = (props) => {
-  const { className, type, placeholder, onChange, value, disabled } = props;
+  const { className, type, placeholder, onChange, value, disabled, accept } =
+    props;
 
   return (
     <input
@@ -20,6 +22,7 @@ const TextBox: React.FC<TextBoxProps> = (props) => {
       onChange={onChange}
       value={value}
       disabled={disabled}
+      accept={accept}
     />
   );
 };
