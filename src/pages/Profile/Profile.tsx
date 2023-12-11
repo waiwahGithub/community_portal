@@ -107,7 +107,7 @@ const Profile = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Image uploaded successfully!", data?.data?.display_url);
+        // console.log("Image uploaded successfully!", data?.data?.display_url);
         setInputValueProfileImage(data?.data?.display_url);
         setIsImageUploaded(true);
       } else {

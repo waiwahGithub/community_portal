@@ -174,6 +174,7 @@ const Post: React.FC<Props> = (props) => {
   // );
 
   // 0=Like, 1=dislike, 2=comment, 3=share, 4=follow, 5=unfollow,6=member
+
   const addLikeToPostNotificationQuery1 = useAddLikeToPostNotificationQuery(
     isLikeClicked,
     account?.id,

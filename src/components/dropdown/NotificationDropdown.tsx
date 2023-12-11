@@ -3,10 +3,12 @@ import { imgBase64 } from "../../assets/base64/imgBase64";
 import Link from "../link/Link";
 import RowStandardModal from "../modal/RowStandardModal";
 import {
+  useGetAllNotificationQuery,
   useGetNotificationLogByUserIdQuery,
   useUpdateUserNotificationStatusQuery,
 } from "../../hooks/use-NotificationQuery";
 import useGetUserDetailsQuery from "../../hooks/use-GetUserDetailsQuery";
+import useViewUserDetailsById from "../../hooks/use-ViewUserDetailsByID";
 
 const NotificationDropdown = () => {
   // Global
@@ -33,9 +35,14 @@ const NotificationDropdown = () => {
   const getNotificationLogByUserIdQuery = useGetNotificationLogByUserIdQuery(
     account?.id
   );
+  const getAllNotificationQuery = useGetAllNotificationQuery();
   const updateUserNotificationStatusQuery =
     useUpdateUserNotificationStatusQuery(isNotificationClick, account?.id, 0);
   const getUserDetailsQuery = useGetUserDetailsQuery();
+  const viewUserDetailsQuery = useViewUserDetailsById(
+    needRefreshQuery === "true",
+    account?.id
+  );
 
   // Functional events
   const convertDateTime = (createdDate: any) => {
@@ -95,7 +102,7 @@ const NotificationDropdown = () => {
         }
       />
 
-      {needRefreshQuery === "true" && (
+      {viewUserDetailsQuery?.data?.body?.notificationStatus === 1 && (
         <div className="absolute top-0 left-0 h-3 w-3 bg-red-700 rounded-full"></div>
       )}
       {isOpen && (
@@ -106,8 +113,8 @@ const NotificationDropdown = () => {
           <div className="py-2">
             <span className="text-sm font-bold pl-4">Notifications</span>
             <ul className="mt-3">
-              {Array.isArray(getNotificationLogByUserIdQuery?.data?.body) &&
-                getNotificationLogByUserIdQuery?.data?.body
+              {Array.isArray(getAllNotificationQuery?.data?.body) &&
+                getAllNotificationQuery?.data?.body
                   ?.sort((a: any, b: any) => {
                     const dateA: any = new Date(a.createdDate);
                     const dateB: any = new Date(b.createdDate);
@@ -129,19 +136,21 @@ const NotificationDropdown = () => {
 
                       return type;
                     };
-                    return (
-                      <li>
-                        <RowStandardModal
-                          key={index}
-                          logoPath={log?.user?.profileImgPath}
-                          isNotificationModal={true}
-                          notificationTime={convertDateTime(log?.createdDate)}
-                          notificationName={`${
-                            log?.user?.firstName
-                          } ${getNotificationType()} your post`}
-                        />
-                      </li>
-                    );
+
+                    if (log?.post?.user.id === account?.id)
+                      return (
+                        <li>
+                          <RowStandardModal
+                            key={index}
+                            logoPath={log?.user?.profileImgPath}
+                            isNotificationModal={true}
+                            notificationTime={convertDateTime(log?.createdDate)}
+                            notificationName={`${
+                              log?.user?.firstName
+                            } ${getNotificationType()} your post`}
+                          />
+                        </li>
+                      );
                   })}
             </ul>
             <div className="text-center mb-2">
